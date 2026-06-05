@@ -1,11 +1,32 @@
 @import "tailwindcss";
 
-/* ── Design tokens (Directly integrated from VibeSpot Tropical Palette) ── */
-:root {
+@theme {
+  /* ── Core Typography Mappings ── */
   --font-sans: "DM Sans", system-ui, sans-serif;
   --font-mono: "DM Mono", "Courier New", monospace;
 
-  /* Primary Color Ramps (Light stops - Stone & Emerald theme) */
+  /* ── Design Tokens & Semantic Mappings ── */
+  --color-brand-primary: var(--emerald-400);
+  --color-brand-primary-hover: var(--emerald-500);
+  --color-brand-primary-subtle: var(--emerald-50);
+  --color-accent-vibe: var(--amber-400);
+  --color-accent-subtle: var(--amber-50);
+  --color-surface-warm: var(--peach-50);
+  --color-surface-warm-border: var(--peach-100);
+  --color-surface-page: var(--stone-50);
+  --color-surface-card: #ffffff;
+
+  --color-text-primary: var(--stone-700);
+  --color-text-secondary: var(--stone-400);
+  --color-text-tertiary: var(--stone-300);
+  --color-text-on-brand: #ffffff;
+
+  --color-border-primary: var(--stone-300);
+  --color-border-secondary: var(--stone-200);
+  --color-border-tertiary: var(--stone-100);
+
+  /* ── Complete Raw Tropical Color Ramps ── */
+  /* Emerald (Primary Brand Ramps) */
   --emerald-50: #e3f5ef;
   --emerald-100: #b6e5d2;
   --emerald-200: #7ecdb4;
@@ -16,6 +37,18 @@
   --emerald-700: #073d2d;
   --emerald-900: #032619;
 
+  /* Coral (Action Items / Live Highlights) */
+  --coral-50: #fff0ed;
+  --coral-100: #ffdcd3;
+  --coral-200: #ffbba9;
+  --coral-300: #ff8e73;
+  --coral-400: #ff603b;
+  --coral-500: #e63b15;
+  --coral-600: #b82504;
+  --coral-700: #8a1700;
+  --coral-900: #5c0b00;
+
+  /* Amber (Visual Micro-Badges / Ratings) */
   --amber-50: #fef8e7;
   --amber-100: #fdedb7;
   --amber-200: #fad87a;
@@ -26,6 +59,7 @@
   --amber-700: #7a4e00;
   --amber-900: #4d3000;
 
+  /* Peach (Warm Accent Overlays) */
   --peach-50: #fff8f0;
   --peach-100: #fdecd8;
   --peach-200: #fad8b2;
@@ -36,6 +70,7 @@
   --peach-700: #7a3a0a;
   --peach-900: #4d2205;
 
+  /* Stone (Foundational Neutrals) */
   --stone-50: #f4f7f5;
   --stone-100: #dde8e3;
   --stone-200: #bdd0c8;
@@ -46,30 +81,7 @@
   --stone-700: #2a3831;
   --stone-900: #18221e;
 
-  /* Semantic Tokens - Light Mode Premium Default */
-  --color-brand-primary: var(--emerald-400); /* #1B8F6E */
-  --color-brand-primary-hover: var(--emerald-500); /* #137055 */
-  --color-brand-primary-subtle: var(--emerald-50); /* #E3F5EF */
-
-  --color-accent-vibe: var(--amber-400); /* #F5A623 */
-  --color-accent-subtle: var(--amber-50); /* #FEF8E7 */
-
-  --color-surface-warm: var(--peach-50); /* #FFF8F0 */
-  --color-surface-warm-border: var(--peach-100); /* #FDECD8 */
-
-  --color-surface-page: var(--stone-50); /* #F4F7F5 */
-  --color-surface-card: #ffffff;
-  --color-surface-overlay: rgba(255, 255, 255, 0.76);
-
-  --color-text-primary: var(--stone-700); /* #2A3831 */
-  --color-text-secondary: var(--stone-400); /* #637E76 */
-  --color-text-tertiary: var(--stone-300); /* #8FADA3 */
-  --color-text-on-brand: #ffffff;
-
-  --color-border-primary: var(--stone-300); /* #8FADA3 */
-  --color-border-secondary: var(--stone-200); /* #BDD0C8 */
-  --color-border-tertiary: var(--stone-100); /* #DDE8E3 */
-
+  /* ── Layout & Elevation Tokens ── */
   --border-radius-sm: 4px;
   --border-radius-md: 8px;
   --border-radius-lg: 12px;
@@ -80,4 +92,25 @@
   --shadow-md: 0 4px 12px rgba(42, 56, 49, 0.08);
   --shadow-lg: 0 12px 24px -4px rgba(42, 56, 49, 0.12);
   --shadow-xl: 0 20px 32px -6px rgba(42, 56, 49, 0.16);
+}
+
+/* ── Base Global Elements HTML Overrides ── */
+@layer base {
+  html,
+  body {
+    background-color: var(--color-surface-page);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* Universal Selection Style across paths */
+  ::selection {
+    background-color: var(--emerald-100);
+    color: var(--emerald-900);
+  }
 }

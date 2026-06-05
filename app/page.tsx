@@ -58,15 +58,26 @@ export default function VibeSpotLanding() {
     }
   }, []);
 
+  // 1. Add an exiting tracking state near your other states
+  const [isExiting, setIsExiting] = useState(false);
+
   // Automated Slideshow Sequencer loop
   useEffect(() => {
     const interval = setInterval(() => {
       if (hoveredSpotIdRef.current === null) {
-        slideshowIndexRef.current =
-          (slideshowIndexRef.current + 1) % spotsOrder.length;
-        setActiveSpotId(spotsOrder[slideshowIndexRef.current]);
+        // Trigger the exit animation phase
+        setIsExiting(true);
+
+        // Wait exactly for the 350ms CSS animation to conclude before swapping data
+        setTimeout(() => {
+          slideshowIndexRef.current =
+            (slideshowIndexRef.current + 1) % spotsOrder.length;
+          setActiveSpotId(spotsOrder[slideshowIndexRef.current]);
+          setIsExiting(false); // Reset for the next bubble's pop-in
+        }, 350);
       }
     }, 4000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -107,6 +118,7 @@ export default function VibeSpotLanding() {
 
       <MapBackground
         activeSpotId={activeSpotId}
+        isExiting={isExiting}
         clearHideBuffer={clearHideBuffer}
         startHideBuffer={startHideBuffer}
         setHoveredSpotId={setHoveredSpotId}

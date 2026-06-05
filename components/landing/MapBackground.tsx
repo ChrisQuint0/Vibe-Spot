@@ -3,6 +3,7 @@ import { spotData, spotsOrder } from "./constants";
 
 interface MapBackgroundProps {
   activeSpotId: number | null;
+  isExiting: boolean;
   clearHideBuffer: (id: number) => void;
   startHideBuffer: () => void;
   setHoveredSpotId: (id: number | null) => void;
@@ -10,6 +11,7 @@ interface MapBackgroundProps {
 
 export default function MapBackground({
   activeSpotId,
+  isExiting,
   clearHideBuffer,
   startHideBuffer,
   setHoveredSpotId,
@@ -320,7 +322,7 @@ export default function MapBackground({
           <div
             key={id}
             id={`bubble-dynamic-${id}`}
-            className="floating-chat-bubble entered"
+            className={`floating-chat-bubble entered ${isExiting ? "exiting" : ""}`}
             style={{
               left: data.side === "left" ? "42px" : "auto",
               right: data.side === "right" ? "42px" : "auto",

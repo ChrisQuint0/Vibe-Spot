@@ -1,69 +1,3 @@
-:root {
-  --font-sans: "DM Sans", system-ui, sans-serif;
-  --font-mono: "DM Mono", "Courier New", monospace;
-  --emerald-50: #e3f5ef;
-  --emerald-100: #b6e5d2;
-  --emerald-200: #7ecdb4;
-  --emerald-300: #3db090;
-  --emerald-400: #1b8f6e;
-  --emerald-500: #137055;
-  --emerald-600: #0c5540;
-  --emerald-700: #073d2d;
-  --emerald-900: #032619;
-  --amber-50: #fef8e7;
-  --amber-100: #fdedb7;
-  --amber-200: #fad87a;
-  --amber-300: #f5be3c;
-  --amber-400: #f5a623;
-  --amber-500: #d4860d;
-  --amber-600: #a66508;
-  --amber-700: #7a4e00;
-  --amber-900: #4d3000;
-  --peach-50: #fff8f0;
-  --peach-100: #fdecd8;
-  --peach-200: #fad8b2;
-  --peach-300: #f5c08a;
-  --peach-400: #eda05c;
-  --peach-500: #d07a36;
-  --peach-600: #a85d22;
-  --peach-700: #7a3a0a;
-  --peach-900: #4d2205;
-  --stone-50: #f4f7f5;
-  --stone-100: #dde8e3;
-  --stone-200: #bdd0c8;
-  --stone-300: #8fada3;
-  --stone-400: #637e76;
-  --stone-500: #48615a;
-  --stone-600: #374a44;
-  --stone-700: #2a3831;
-  --stone-900: #18221e;
-
-  --color-brand-primary: var(--emerald-400);
-  --color-brand-primary-hover: var(--emerald-500);
-  --color-brand-primary-subtle: var(--emerald-50);
-  --color-accent-vibe: var(--amber-400);
-  --color-accent-subtle: var(--amber-50);
-  --color-surface-warm: var(--peach-50);
-  --color-surface-warm-border: var(--peach-100);
-  --color-surface-page: var(--stone-50);
-  --color-surface-card: #ffffff;
-  --color-text-primary: var(--stone-700);
-  --color-text-secondary: var(--stone-400);
-  --color-text-tertiary: var(--stone-300);
-  --color-text-on-brand: #ffffff;
-  --color-border-primary: var(--stone-300);
-  --color-border-secondary: var(--stone-200);
-  --color-border-tertiary: var(--stone-100);
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --border-radius-xl: 18px;
-  --border-radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgba(42, 56, 49, 0.05);
-  --shadow-md: 0 4px 12px rgba(42, 56, 49, 0.08);
-  --shadow-lg: 0 12px 24px -4px rgba(42, 56, 49, 0.12);
-  --shadow-xl: 0 20px 32px -6px rgba(42, 56, 49, 0.16);
-}
 .app-viewport {
   position: relative;
   width: 100vw;
@@ -618,7 +552,22 @@
   }
 }
 
+@keyframes mobileSlideOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 40px) scale(0.92); /* Drop down and shrink slightly */
+  }
+}
+
 @media (max-width: 840px) {
+  .floating-chat-bubble.exiting {
+    animation: mobileSlideOut 0.35s cubic-bezier(0.32, 0, 0.67, 0) forwards !important;
+  }
+
   .map-pin {
     display: none !important;
   }
