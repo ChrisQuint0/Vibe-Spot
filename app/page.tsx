@@ -9,8 +9,10 @@ import SignupModal from "@/components/landing/SignupModal";
 import Toast from "@/components/landing/Toast";
 import { spotsOrder } from "@/components/landing/constants";
 import "@/components/landing/landing.css";
+import LoadingScreen from "@/components/landing/LoadingScreen";
 
 export default function VibeSpotLanding() {
+  const [isLoading, setIsLoading] = useState(true); //Loading screen
   const [aboutOpen, setAboutOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [activeSpotId, setActiveSpotId] = useState<number | null>(1);
@@ -111,6 +113,8 @@ export default function VibeSpotLanding() {
 
   return (
     <div className="app-viewport">
+      {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+
       <Header
         onAboutOpen={() => setAboutOpen(true)}
         onSignupOpen={() => setSignupOpen(true)}
