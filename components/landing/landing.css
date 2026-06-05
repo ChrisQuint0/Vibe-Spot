@@ -1,0 +1,696 @@
+:root {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-mono: "DM Mono", "Courier New", monospace;
+  --emerald-50: #e3f5ef;
+  --emerald-100: #b6e5d2;
+  --emerald-200: #7ecdb4;
+  --emerald-300: #3db090;
+  --emerald-400: #1b8f6e;
+  --emerald-500: #137055;
+  --emerald-600: #0c5540;
+  --emerald-700: #073d2d;
+  --emerald-900: #032619;
+  --amber-50: #fef8e7;
+  --amber-100: #fdedb7;
+  --amber-200: #fad87a;
+  --amber-300: #f5be3c;
+  --amber-400: #f5a623;
+  --amber-500: #d4860d;
+  --amber-600: #a66508;
+  --amber-700: #7a4e00;
+  --amber-900: #4d3000;
+  --peach-50: #fff8f0;
+  --peach-100: #fdecd8;
+  --peach-200: #fad8b2;
+  --peach-300: #f5c08a;
+  --peach-400: #eda05c;
+  --peach-500: #d07a36;
+  --peach-600: #a85d22;
+  --peach-700: #7a3a0a;
+  --peach-900: #4d2205;
+  --stone-50: #f4f7f5;
+  --stone-100: #dde8e3;
+  --stone-200: #bdd0c8;
+  --stone-300: #8fada3;
+  --stone-400: #637e76;
+  --stone-500: #48615a;
+  --stone-600: #374a44;
+  --stone-700: #2a3831;
+  --stone-900: #18221e;
+
+  --color-brand-primary: var(--emerald-400);
+  --color-brand-primary-hover: var(--emerald-500);
+  --color-brand-primary-subtle: var(--emerald-50);
+  --color-accent-vibe: var(--amber-400);
+  --color-accent-subtle: var(--amber-50);
+  --color-surface-warm: var(--peach-50);
+  --color-surface-warm-border: var(--peach-100);
+  --color-surface-page: var(--stone-50);
+  --color-surface-card: #ffffff;
+  --color-text-primary: var(--stone-700);
+  --color-text-secondary: var(--stone-400);
+  --color-text-tertiary: var(--stone-300);
+  --color-text-on-brand: #ffffff;
+  --color-border-primary: var(--stone-300);
+  --color-border-secondary: var(--stone-200);
+  --color-border-tertiary: var(--stone-100);
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 18px;
+  --border-radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(42, 56, 49, 0.05);
+  --shadow-md: 0 4px 12px rgba(42, 56, 49, 0.08);
+  --shadow-lg: 0 12px 24px -4px rgba(42, 56, 49, 0.12);
+  --shadow-xl: 0 20px 32px -6px rgba(42, 56, 49, 0.16);
+}
+.app-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  background: var(--color-surface-page);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+.app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  background: transparent;
+}
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+.logo-badge {
+  /* Keep alignment and interactive transitions */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: 38px;
+  width: auto;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.logo-badge:hover {
+  transform: scale(1.05) rotate(-3deg); /* Slightly gentler hover effects for uncontained logos */
+}
+
+.logo-badge img {
+  /* Set an explicit height for your logo icon instead of letting it fill a circle container */
+  height: 46px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.brand-name {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.action-btn-outline {
+  border: 1px solid var(--color-border-secondary);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(4px);
+  color: var(--color-text-primary);
+  font-size: 13.5px;
+  font-weight: 550;
+  padding: 8px 18px;
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.action-btn-outline:hover {
+  background: var(--color-surface-page);
+  border-color: var(--color-border-primary);
+}
+.action-btn-primary {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-brand);
+  border: none;
+  font-size: 13.5px;
+  font-weight: 550;
+  padding: 8px 18px;
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.action-btn-primary:hover {
+  background: var(--color-brand-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.map-background-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: linear-gradient(
+    135deg,
+    #fbfffb 0%,
+    var(--emerald-50) 30%,
+    var(--peach-50) 65%,
+    #f7fcfa 100%
+  );
+  overflow: hidden;
+}
+#map-mockup-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.map-center-fog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse 65% 75% at 50% 50%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.9) 22%,
+    rgba(255, 255, 255, 0.6) 46%,
+    rgba(255, 255, 255, 0.18) 68%,
+    rgba(255, 255, 255, 0) 85%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+.map-pin {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.pin-core {
+  width: 14px;
+  height: 14px;
+  background: var(--color-accent-vibe);
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(42, 56, 49, 0.2);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.pin-pulsar {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent-vibe);
+  opacity: 0;
+  pointer-events: none;
+  animation: pinPulse 2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+.map-pin.active .pin-core,
+.map-pin:hover .pin-core {
+  transform: scale(1.3);
+  background: var(--color-accent-vibe);
+  box-shadow: 0 0 12px var(--color-accent-vibe);
+  border-color: #ffffff;
+}
+.map-pin.active .pin-pulsar {
+  animation: pinPulse 1.8s infinite cubic-bezier(0.16, 1, 0.3, 1);
+  border-color: var(--color-accent-vibe);
+}
+@keyframes pinPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* 1. Define the Desktop Pop Animation Keyframes */
+@keyframes desktopPop {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.85);
+  }
+  70% {
+    transform: translateY(-2px) scale(1.03); /* Slight bounce overhead */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Update the base desktop bubble style */
+.floating-chat-bubble {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-xl);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-lg);
+  max-width: 250px;
+  width: max-content;
+  z-index: 10;
+  pointer-events: auto;
+  opacity: 0;
+  cursor: pointer;
+
+  /* Smooth transition configuration for the hover state scaling */
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+/* Trigger the Pop animation only when the item renders active */
+.floating-chat-bubble.entered {
+  animation: desktopPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Keep your crisp hover effect intact */
+.floating-chat-bubble:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  border-color: var(--color-brand-primary);
+  box-shadow: var(--shadow-xl);
+}
+.chat-bubble-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  gap: 16px;
+}
+.chat-bubble-group {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-brand-primary);
+}
+.chat-bubble-meta {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+}
+.chat-bubble-body {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.45;
+}
+
+#landing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 15;
+}
+.hero-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding: 0;
+  width: 90%;
+  max-width: 680px;
+  text-align: center;
+  pointer-events: auto;
+}
+.hero-title {
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.03em;
+  text-shadow:
+    0 1px 4px rgba(255, 255, 255, 0.92),
+    0 2px 20px rgba(255, 255, 255, 0.45);
+}
+.vibe-phrase-container {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 68px;
+  overflow: hidden;
+  margin: 0.25rem auto 0;
+}
+.phrase-slider-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.vibe-phrase {
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--color-brand-primary);
+  white-space: nowrap;
+  text-shadow:
+    0 1px 4px rgba(255, 255, 255, 0.92),
+    0 2px 20px rgba(255, 255, 255, 0.45);
+}
+.hero-description {
+  font-size: 20px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 400;
+  text-shadow:
+    0 1px 4px rgba(255, 255, 255, 0.95),
+    0 2px 14px rgba(255, 255, 255, 0.8);
+}
+
+.cta-btn-primary {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-brand);
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 14px 44px;
+  border-radius: var(--border-radius-pill);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cta-btn-primary:hover {
+  background: var(--color-brand-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.cta-btn-primary i {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+.cta-btn-primary:hover i {
+  transform: translateX(4px);
+}
+
+.drawer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(24, 34, 30, 0.4);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  display: flex;
+  justify-content: flex-end;
+}
+.drawer-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.drawer-panel {
+  width: 500px;
+  max-width: 100%;
+  height: 100%;
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-xl);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 3rem;
+  position: relative;
+  overflow-y: auto;
+}
+.drawer-overlay.active .drawer-panel {
+  transform: translateX(0);
+}
+.close-drawer-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-tertiary);
+  background: var(--color-surface-card);
+  color: var(--color-text-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+.close-drawer-btn:hover {
+  background: var(--color-surface-page);
+  border-color: var(--color-brand-primary);
+  color: var(--color-brand-primary);
+}
+.drawer-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+.drawer-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 2rem;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(24, 34, 30, 0.4);
+  z-index: 210;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-card {
+  width: 420px;
+  max-width: 90%;
+  background: var(--color-surface-card);
+  border-radius: var(--border-radius-xl);
+  border: 1px solid var(--color-border-secondary);
+  box-shadow: var(--shadow-xl);
+  padding: 2.5rem;
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+}
+.modal-overlay.active .modal-card {
+  transform: scale(1);
+}
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 1.5rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+.form-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.form-input {
+  height: 44px;
+  border: 1px solid var(--color-border-secondary);
+  background: var(--color-surface-page);
+  color: var(--color-text-primary);
+  border-radius: var(--border-radius-lg);
+  padding: 0 1rem;
+  font-size: 14px;
+  outline: none;
+}
+.form-input:focus {
+  border-color: var(--color-brand-primary);
+}
+
+#toast-notification {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--color-stone-900);
+  color: var(--stone-50);
+  padding: 12px 24px;
+  border-radius: var(--border-radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: var(--shadow-xl);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    opacity 0.4s;
+  pointer-events: none;
+}
+#toast-notification.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+#toast-notification i {
+  color: var(--color-brand-primary);
+  font-size: 16px;
+}
+
+/* 2. Define Mobile Slide-Up Animation Keyframes */
+@keyframes mobileSlideUp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 100%) scale(1); /* Slide from completely below viewport */
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1); /* Lock exactly into position */
+  }
+}
+
+@media (max-width: 840px) {
+  .map-pin {
+    display: none !important;
+  }
+
+  .floating-chat-bubble {
+    display: block !important;
+    top: auto !important;
+    bottom: 5% !important;
+    left: 50% !important;
+    right: auto !important;
+    width: 90% !important;
+    max-width: 380px !important;
+    /* Reset default desktop hover translations on touch screens */
+    transition: border-color 0.3s;
+  }
+
+  /* Override the Desktop animation with the Mobile Slide-In */
+  .floating-chat-bubble.entered {
+    animation: mobileSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+
+  .floating-chat-bubble:hover {
+    /* Prevent desktop translateY hover configurations from skewing the mobile centering */
+    transform: translate(-50%, 0) scale(1) !important;
+  }
+
+  .app-header {
+    padding: 0 0.25rem; /* Bring margins closer to the screen edges */
+    height: 64px; /* Slightly shallower header bar for mobile real estate */
+  }
+
+  .brand-name {
+    font-size: 18px; /* Bring down scale to avoid forcing line wrap */
+  }
+
+  .logo-badge img {
+    height: 24px; /* Shrink logo proportional to the shallow bar */
+  }
+
+  .header-actions {
+    gap: 8px; /* Bring action buttons closer together */
+  }
+}
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 28px;
+  }
+  .vibe-phrase-container {
+    height: 36px;
+  }
+  .vibe-phrase {
+    height: 36px;
+    font-size: 26px;
+  }
+  .hero-description {
+    font-size: 14px;
+  }
+  .brand-name {
+    font-size: 18px;
+  }
+
+  .brand-container {
+    gap: 6px;
+  }
+
+  .logo-badge img {
+    height: 36px;
+  }
+
+  .action-btn-outline,
+  .action-btn-primary {
+    font-size: 12px;
+    padding: 7px 13px;
+  }
+}

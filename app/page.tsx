@@ -1,61 +1,132 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Header from "@/components/landing/Header";
+import MapBackground from "@/components/landing/MapBackground";
+import HeroSection from "@/components/landing/HeroSection";
+import AboutDrawer from "@/components/landing/AboutDrawer";
+import SignupModal from "@/components/landing/SignupModal";
+import Toast from "@/components/landing/Toast";
+import { spotsOrder } from "@/components/landing/constants";
+import "@/components/landing/landing.css";
 
-export default function Home() {
-  const [dynamicWord, setDynamicWord] = useState("Weekend Plans");
+export default function VibeSpotLanding() {
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
+  const [activeSpotId, setActiveSpotId] = useState<number | null>(1);
+  const [hoveredSpotId, setHoveredSpotId] = useState<number | null>(null);
+  const [toast, setToast] = useState({ visible: false, message: "", icon: "" });
 
-  // The shifting words requested by the Vibe_Spot_Capstone_1_Product_Scope.pdf
-  const phrases = [
-    "Weekend Plans",
-    "Coffee Spot",
-    "Study Place",
-    "Date Night",
-    "Food Adventure",
-    "Barkada Hangout",
-  ];
+  const hoveredSpotIdRef = useRef(hoveredSpotId);
+  const slideshowIndexRef = useRef(0);
+  const hideBufferTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      index = (index + 1) % phrases.length;
-      setDynamicWord(phrases[index]);
-    }, 3000); // Transitions smoothly every few seconds
+    hoveredSpotIdRef.current = hoveredSpotId;
+  }, [hoveredSpotId]);
 
+  // Inject external dependencies (Fonts + Tabler Icons CDN) at runtime
+  useEffect(() => {
+    if (!document.getElementById("google-fonts-dm")) {
+      const p1 = document.createElement("link");
+      p1.rel = "preconnect";
+      p1.href = "https://fonts.googleapis.com";
+      document.head.appendChild(p1);
+
+      const p2 = document.createElement("link");
+      p2.rel = "preconnect";
+      p2.href = "https://fonts.gstatic.com";
+      p2.crossOrigin = "anonymous";
+      document.head.appendChild(p2);
+
+      const linkFont = document.createElement("link");
+      linkFont.id = "google-fonts-dm";
+      linkFont.rel = "stylesheet";
+      linkFont.href =
+        "https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=DM+Mono:wght@400;500&display=swap";
+      document.head.appendChild(linkFont);
+    }
+
+    if (!document.getElementById("tabler-icons-cdn")) {
+      const linkIcons = document.createElement("link");
+      linkIcons.id = "tabler-icons-cdn";
+      linkIcons.rel = "stylesheet";
+      linkIcons.href =
+        "https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css";
+      document.head.appendChild(linkIcons);
+    }
+  }, []);
+
+  // Automated Slideshow Sequencer loop
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (hoveredSpotIdRef.current === null) {
+        slideshowIndexRef.current =
+          (slideshowIndexRef.current + 1) % spotsOrder.length;
+        setActiveSpotId(spotsOrder[slideshowIndexRef.current]);
+      }
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  const handleStartDiscovery = () => {
-    console.log("Transition to AI preference collection flow...");
-    // This is where you will trigger your conversational AI UI
+  const showToast = (message: string, iconClass = "ti-circle-check-filled") => {
+    setToast({ visible: true, message, icon: iconClass });
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast((prev) => ({ ...prev, visible: false }));
+    }, 4000);
+  };
+
+  const clearHideBuffer = (spotId: number) => {
+    setHoveredSpotId(spotId);
+    if (hideBufferTimeoutRef.current)
+      clearTimeout(hideBufferTimeoutRef.current);
+    setActiveSpotId(spotId);
+    const idx = spotsOrder.indexOf(spotId);
+    if (idx !== -1) slideshowIndexRef.current = idx;
+  };
+
+  const startHideBuffer = () => {
+    setHoveredSpotId(null);
+    if (hideBufferTimeoutRef.current)
+      clearTimeout(hideBufferTimeoutRef.current);
+    hideBufferTimeoutRef.current = setTimeout(() => {
+      if (hoveredSpotIdRef.current === null) {
+        setActiveSpotId(null);
+      }
+    }, 1200);
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-white px-6 text-black selection:bg-indigo-100">
-      <div className="max-w-3xl text-center space-y-6">
-        {/* Dynamic Hero Headline */}
-        <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl text-gray-900 transition-all duration-500">
-          Find Your{" "}
-          <span className="text-indigo-600 block sm:inline">{dynamicWord}</span>
-        </h1>
+    <div className="app-viewport">
+      <Header
+        onAboutOpen={() => setAboutOpen(true)}
+        onSignupOpen={() => setSignupOpen(true)}
+      />
 
-        {/* Product Scope Description */}
-        <p className="mx-auto max-w-xl text-lg text-gray-600 leading-relaxed">
-          Discover hidden gems and authentic local spots across Pasig City,
-          curated by AI based on your preferences and ready to share with your
-          friends.
-        </p>
+      <MapBackground
+        activeSpotId={activeSpotId}
+        clearHideBuffer={clearHideBuffer}
+        startHideBuffer={startHideBuffer}
+        setHoveredSpotId={setHoveredSpotId}
+      />
 
-        {/* Primary Call-To-Action */}
-        <div className="pt-4">
-          <button
-            onClick={handleStartDiscovery}
-            className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
-          >
-            Find a Spot
-          </button>
-        </div>
-      </div>
-    </main>
+      <HeroSection onFindSpotClick={showToast} activeSpotId={activeSpotId} />
+
+      <AboutDrawer isOpen={aboutOpen} onClose={() => setAboutOpen(false)} />
+
+      <SignupModal
+        isOpen={signupOpen}
+        onClose={() => setSignupOpen(false)}
+        onSubmitSuccess={showToast}
+      />
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        icon={toast.icon}
+      />
+    </div>
   );
 }
