@@ -325,7 +325,7 @@ export function PreferenceWizard({ onComplete }: { onComplete: () => void }) {
           : true;
 
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center px-4 py-12 md:p-6 overflow-hidden relative">
+    <div className="h-screen w-full flex flex-col items-center justify-center px-4 pt-16 pb-8 md:p-6 overflow-hidden relative">
       {/* ── Animated blob background ── */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <motion.div
