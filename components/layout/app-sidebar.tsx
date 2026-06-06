@@ -39,18 +39,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function AppSidebar() {
-  const { state, toggleSidebar } = useSidebar();
+  const { state, isMobile, toggleSidebar } = useSidebar();
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+
+  // On mobile the sidebar renders as a Sheet drawer, so always treat it as expanded
+  const isExpanded = isMobile || state === "expanded";
 
   const CollapseButton = () => (
     <button
       onClick={toggleSidebar}
       className="p-1.5 rounded-lg hover:bg-accent transition-colors text-text-secondary hover:text-text-primary"
     >
-      {state === "expanded" ? (
+      {isExpanded && !isMobile ? (
         <PanelLeftClose size={17} />
-      ) : (
+      ) : !isMobile ? (
         <PanelLeftOpen size={17} />
+      ) : (
+        <PanelLeftClose size={17} />
       )}
     </button>
   );
@@ -61,7 +66,7 @@ export function AppSidebar() {
       className="border-r border-border-secondary bg-surface-card"
     >
       <SidebarHeader className="h-16 flex items-center justify-center border-b border-border-tertiary">
-        {state === "expanded" ? (
+        {isExpanded ? (
           <div className="flex items-center justify-between w-full px-2">
             <div
               className="flex items-center gap-2 cursor-pointer transition-transform hover:scale-105"
@@ -126,7 +131,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {state === "expanded" ? (
+            {isExpanded ? (
               <div className="mt-6 px-3">
                 <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
                   Recents
@@ -183,11 +188,11 @@ export function AppSidebar() {
                   size="lg"
                   tooltip="Profile"
                   className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${
-                    state === "collapsed" ? "justify-center" : ""
+                    !isExpanded ? "justify-center" : ""
                   }`}
                 >
                   <User className="text-text-secondary" />
-                  {state === "expanded" && (
+                  {isExpanded && (
                     <>
                       <span className="flex-1 text-left text-sm font-medium">
                         Profile
