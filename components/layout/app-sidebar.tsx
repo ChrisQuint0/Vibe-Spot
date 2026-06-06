@@ -1,0 +1,220 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Search,
+  Heart,
+  MessageSquare,
+  Clock,
+  User,
+  ChevronsUpDown,
+  LogOut,
+  Settings,
+  ArrowLeftToLine,
+  ArrowRightToLine,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarFooter,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+export function AppSidebar() {
+  const { state, toggleSidebar } = useSidebar();
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
+
+  const CollapseButton = () => (
+    <button
+      onClick={toggleSidebar}
+      className="p-1.5 rounded-lg hover:bg-accent transition-colors text-text-secondary hover:text-text-primary"
+    >
+      {state === "expanded" ? (
+        <PanelLeftClose size={17} />
+      ) : (
+        <PanelLeftOpen size={17} />
+      )}
+    </button>
+  );
+
+  return (
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-border-secondary bg-surface-card"
+    >
+      <SidebarHeader className="h-16 flex items-center justify-center border-b border-border-tertiary">
+        {state === "expanded" ? (
+          <div className="flex items-center justify-between w-full px-2">
+            <div
+              className="flex items-center gap-2 cursor-pointer transition-transform hover:scale-105"
+              onClick={() => (window.location.href = "/")}
+            >
+              <img
+                src="/vibe_spot_logo_landing.png"
+                alt="VibeSpot Logo"
+                className="h-8 w-auto object-contain"
+              />
+              <span className="text-xl font-bold text-text-primary tracking-tight">
+                vibe<span className="text-accent-vibe">spot</span>
+              </span>
+            </div>
+            <CollapseButton />
+          </div>
+        ) : (
+          <div
+            className="flex w-full h-full items-center justify-center"
+            onMouseEnter={() => setIsLogoHovered(true)}
+            onMouseLeave={() => setIsLogoHovered(false)}
+          >
+            {isLogoHovered ? (
+              <CollapseButton />
+            ) : (
+              <div
+                className="cursor-pointer transition-transform hover:scale-105"
+                onClick={() => (window.location.href = "/")}
+              >
+                <img
+                  src="/vibe_spot_logo_landing.png"
+                  alt="VibeSpot Logo"
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarMenu className="gap-2 mt-4">
+            <SidebarMenuItem>
+              <SidebarMenuButton tooltip="Discover" isActive>
+                <Search className="text-brand-primary" />
+                <span>Discover</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton tooltip="Saved Places">
+                <Heart className="text-text-secondary" />
+                <span>Saved Places</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton tooltip="Chat">
+                <MessageSquare className="text-text-secondary" />
+                <span>Chat</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            {state === "expanded" ? (
+              <div className="mt-6 px-3">
+                <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
+                  Recents
+                </h3>
+                <div className="h-px bg-border-secondary w-full mb-3" />
+                <ul className="space-y-3">
+                  <li className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors truncate">
+                    Study Cafe's in Kapitolyo
+                  </li>
+                  <li className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors truncate">
+                    Affordable Date Spots
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <SidebarMenuItem>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <SidebarMenuButton tooltip="Recents">
+                      <Clock className="text-text-secondary" />
+                      <span>Recents</span>
+                    </SidebarMenuButton>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    side="right"
+                    align="start"
+                    className="w-64 ml-2 rounded-xl shadow-lg border-border-secondary"
+                  >
+                    <h3 className="text-sm font-semibold text-text-primary mb-3">
+                      Recent Recommendations
+                    </h3>
+                    <ul className="space-y-2">
+                      <li className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors">
+                        Study Cafe's in Kapitolyo
+                      </li>
+                      <li className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors">
+                        Affordable Date Spots
+                      </li>
+                    </ul>
+                  </PopoverContent>
+                </Popover>
+              </SidebarMenuItem>
+            )}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  tooltip="Profile"
+                  className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${
+                    state === "collapsed" ? "justify-center" : ""
+                  }`}
+                >
+                  <User className="text-text-secondary" />
+                  {state === "expanded" && (
+                    <>
+                      <span className="flex-1 text-left text-sm font-medium">
+                        Profile
+                      </span>
+                      <ChevronsUpDown className="ml-auto size-4" />
+                    </>
+                  )}
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                align="start"
+                className="w-48 rounded-xl shadow-lg"
+              >
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}

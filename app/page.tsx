@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion"; // <-- Added framer-motion
+
 import Header from "@/components/landing/Header";
 import MapBackground from "@/components/landing/MapBackground";
 import HeroSection from "@/components/landing/HeroSection";
@@ -10,9 +12,12 @@ import Toast from "@/components/landing/Toast";
 import { spotsOrder } from "@/components/landing/constants";
 import "@/components/landing/landing.css";
 import LoadingScreen from "@/components/landing/LoadingScreen";
+import { useRouter } from "next/navigation";
 
 export default function VibeSpotLanding() {
-  const [isLoading, setIsLoading] = useState(true); //Loading screen
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isNavigating, setIsNavigating] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [activeSpotId, setActiveSpotId] = useState<number | null>(1);
@@ -28,7 +33,7 @@ export default function VibeSpotLanding() {
     hoveredSpotIdRef.current = hoveredSpotId;
   }, [hoveredSpotId]);
 
-  // Inject external dependencies (Fonts + Tabler Icons CDN) at runtime
+  // Inject external dependencies
   useEffect(() => {
     if (!document.getElementById("google-fonts-dm")) {
       const p1 = document.createElement("link");
@@ -42,11 +47,12 @@ export default function VibeSpotLanding() {
       p2.crossOrigin = "anonymous";
       document.head.appendChild(p2);
 
+      // In page.tsx useEffect for fonts:
       const linkFont = document.createElement("link");
-      linkFont.id = "google-fonts-dm";
+      linkFont.id = "google-fonts-jakarta";
       linkFont.rel = "stylesheet";
       linkFont.href =
-        "https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=DM+Mono:wght@400;500&display=swap";
+        "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap";
       document.head.appendChild(linkFont);
     }
 
@@ -60,22 +66,18 @@ export default function VibeSpotLanding() {
     }
   }, []);
 
-  // 1. Add an exiting tracking state near your other states
   const [isExiting, setIsExiting] = useState(false);
 
   // Automated Slideshow Sequencer loop
   useEffect(() => {
     const interval = setInterval(() => {
       if (hoveredSpotIdRef.current === null) {
-        // Trigger the exit animation phase
         setIsExiting(true);
-
-        // Wait exactly for the 350ms CSS animation to conclude before swapping data
         setTimeout(() => {
           slideshowIndexRef.current =
             (slideshowIndexRef.current + 1) % spotsOrder.length;
           setActiveSpotId(spotsOrder[slideshowIndexRef.current]);
-          setIsExiting(false); // Reset for the next bubble's pop-in
+          setIsExiting(false);
         }, 350);
       }
     }, 4000);
@@ -111,15 +113,20 @@ export default function VibeSpotLanding() {
     }, 1200);
   };
 
+  // --- New Handlers for the App Flow ---
+  const handleFindSpotClick = () => {
+    // Trigger exit animation
+    setIsNavigating(true);
+    setTimeout(() => {
+      router.push("/discover");
+    }, 600); // Matches the AnimatePresence exit duration
+  };
+
   return (
-    <div className="app-viewport">
+    <div className="app-viewport relative overflow-hidden h-screen w-full">
       {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
 
-      <Header
-        onAboutOpen={() => setAboutOpen(true)}
-        onSignupOpen={() => setSignupOpen(true)}
-      />
-
+      {/* MapBackground remains at the bottom layer. It adds ambiance. */}
       <MapBackground
         activeSpotId={activeSpotId}
         isExiting={isExiting}
@@ -128,8 +135,33 @@ export default function VibeSpotLanding() {
         setHoveredSpotId={setHoveredSpotId}
       />
 
-      <HeroSection onFindSpotClick={showToast} activeSpotId={activeSpotId} />
+      <AnimatePresence mode="wait">
+        {/* --- LANDING PAGE STATE --- */}
+        {!isNavigating && (
+          <motion.div
+            key="landing-view"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -40, filter: "blur(8px)" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 z-10 flex flex-col pointer-events-none"
+          >
+            {/* Re-enable pointer events for interactive elements */}
+            <div className="pointer-events-auto h-full flex flex-col">
+              <Header
+                onAboutOpen={() => setAboutOpen(true)}
+                onSignupOpen={() => setSignupOpen(true)}
+              />
+              <HeroSection
+                onFindSpotClick={handleFindSpotClick} // Changed from showToast to transition state
+                activeSpotId={activeSpotId}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
+      {/* Modals & Toasts (z-index naturally higher than absolute layers above if ordered correctly) */}
       <AboutDrawer isOpen={aboutOpen} onClose={() => setAboutOpen(false)} />
 
       <SignupModal
