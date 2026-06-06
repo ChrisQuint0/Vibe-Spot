@@ -10,6 +10,10 @@ import {
   ChevronsUpDown,
   LogOut,
   Settings,
+  ArrowLeftToLine,
+  ArrowRightToLine,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import {
   Sidebar,
@@ -20,7 +24,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-  SidebarTrigger, // <-- Added SidebarTrigger
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -36,8 +39,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function AppSidebar() {
-  const { state } = useSidebar();
-  const [isLogoHovered, setIsLogoHovered] = useState(false); // <-- Added state for hover
+  const { state, toggleSidebar } = useSidebar();
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
+
+  const CollapseButton = () => (
+    <button
+      onClick={toggleSidebar}
+      className="p-1.5 rounded-lg hover:bg-accent transition-colors text-text-secondary hover:text-text-primary"
+    >
+      {state === "expanded" ? (
+        <PanelLeftClose size={17} />
+      ) : (
+        <PanelLeftOpen size={17} />
+      )}
+    </button>
+  );
 
   return (
     <Sidebar
@@ -60,8 +76,7 @@ export function AppSidebar() {
                 vibe<span className="text-accent-vibe">spot</span>
               </span>
             </div>
-            {/* The trigger lives inside the header when expanded */}
-            <SidebarTrigger />
+            <CollapseButton />
           </div>
         ) : (
           <div
@@ -69,9 +84,8 @@ export function AppSidebar() {
             onMouseEnter={() => setIsLogoHovered(true)}
             onMouseLeave={() => setIsLogoHovered(false)}
           >
-            {/* Swap between the Trigger and the Logo based on hover state */}
             {isLogoHovered ? (
-              <SidebarTrigger />
+              <CollapseButton />
             ) : (
               <div
                 className="cursor-pointer transition-transform hover:scale-105"
@@ -114,7 +128,7 @@ export function AppSidebar() {
 
             {state === "expanded" ? (
               <div className="mt-6 px-3">
-                <h3 className="text-sm font-semibold text-text-primary mb-2">
+                <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
                   Recents
                 </h3>
                 <div className="h-px bg-border-secondary w-full mb-3" />
@@ -173,8 +187,6 @@ export function AppSidebar() {
                   }`}
                 >
                   <User className="text-text-secondary" />
-
-                  {/* Only show the text and chevron when expanded */}
                   {state === "expanded" && (
                     <>
                       <span className="flex-1 text-left text-sm font-medium">
@@ -186,9 +198,9 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="right"
-                align="end"
-                className="w-48 ml-2 rounded-xl shadow-lg"
+                side="top"
+                align="start"
+                className="w-48 rounded-xl shadow-lg"
               >
                 <DropdownMenuItem>
                   <Settings className="mr-2 h-4 w-4" />
