@@ -45,9 +45,24 @@ vibe-spot/
 │   ├── (auth)/           # Authentication flows (Login/Register)
 │   ├── api/              # Backend API routes for Next.js
 │   ├── dashboard/        # User dashboard and recommendation history
-│   └── group/            # Collaborative group chat and polling pages
+│   ├── group/            # Collaborative group chat and polling pages
+│   │   └── [id]/         # Dynamic route for specific group sessions
+│   ├── constants.ts      # Global constants for the app
+│   ├── globals.css       # Global styles including Tailwind imports
+│   ├── layout.tsx        # Root layout for the application
+│   └── page.tsx          # The main landing page entry point
 ├── components/           # Reusable UI components
 │   ├── chat/             # Chat UI, message bubbles, polls
+│   ├── landing/          # Components specific to the landing page experience
+│   │   ├── AboutDrawer.tsx   # Drawer component for "About" section
+│   │   ├── Header.tsx        # Navigation header
+│   │   ├── HeroSection.tsx   # Main hero banner with call to actions
+│   │   ├── LoadingScreen.tsx # Initial loading animation screen
+│   │   ├── MapBackground.tsx # Interactive map background for landing
+│   │   ├── SignupModal.tsx   # Modal for user registration
+│   │   ├── Toast.tsx         # Notification toast component
+│   │   ├── constants.ts      # Constants used within landing components
+│   │   └── landing.css       # Specific styles for the landing page
 │   ├── maps/             # Mapbox visual components and markers
 │   ├── recommendations/  # AI recommendation cards, preference inputs
 │   └── ui/               # Generic UI elements (Buttons, Inputs, Modals)
