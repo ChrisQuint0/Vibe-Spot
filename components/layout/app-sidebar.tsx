@@ -38,9 +38,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// 1. IMPORT THE CONTEXT HOOK
+import { useRecommendations } from "@/store/recommendation-context";
+
 export function AppSidebar() {
   const { state, isMobile, toggleSidebar } = useSidebar();
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+
+  // 2. INITIALIZE THE HOOK TO GET DYNAMIC RECENTS
+  const { recentRecommendations, setActiveRecommendation } =
+    useRecommendations();
 
   // On mobile the sidebar renders as a Sheet drawer, so always treat it as expanded
   const isExpanded = isMobile || state === "expanded";
@@ -137,13 +144,24 @@ export function AppSidebar() {
                   Recents
                 </h3>
                 <div className="h-px bg-border-secondary w-full mb-3" />
+
+                {/* 3a. DYNAMIC MAPPING FOR EXPANDED SIDEBAR */}
                 <ul className="space-y-3">
-                  <li className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors truncate">
-                    Study Cafe's in Kapitolyo
-                  </li>
-                  <li className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors truncate">
-                    Affordable Date Spots
-                  </li>
+                  {recentRecommendations.length === 0 ? (
+                    <li className="text-xs text-text-secondary italic px-1">
+                      No recent searches
+                    </li>
+                  ) : (
+                    recentRecommendations.map((rec) => (
+                      <li
+                        key={rec.id}
+                        onClick={() => setActiveRecommendation(rec)}
+                        className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors truncate"
+                      >
+                        {rec.title}
+                      </li>
+                    ))
+                  )}
                 </ul>
               </div>
             ) : (
@@ -163,13 +181,24 @@ export function AppSidebar() {
                     <h3 className="text-sm font-semibold text-text-primary mb-3">
                       Recent Recommendations
                     </h3>
+
+                    {/* 3b. DYNAMIC MAPPING FOR COLLAPSED POPOVER */}
                     <ul className="space-y-2">
-                      <li className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors">
-                        Study Cafe's in Kapitolyo
-                      </li>
-                      <li className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors">
-                        Affordable Date Spots
-                      </li>
+                      {recentRecommendations.length === 0 ? (
+                        <li className="text-xs text-text-secondary italic">
+                          No recent searches
+                        </li>
+                      ) : (
+                        recentRecommendations.map((rec) => (
+                          <li
+                            key={rec.id}
+                            onClick={() => setActiveRecommendation(rec)}
+                            className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors truncate"
+                          >
+                            {rec.title}
+                          </li>
+                        ))
+                      )}
                     </ul>
                   </PopoverContent>
                 </Popover>
