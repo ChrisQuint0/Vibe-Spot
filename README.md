@@ -41,19 +41,24 @@ The project is structured using Next.js App Router best practices, making it hig
 
 ```
 vibe-spot/
-├── app/                  # Next.js App Router - Pages, layouts, and API routes
-│   ├── (auth)/           # Authentication flows (Login/Register)
-│   ├── api/              # Backend API routes for Next.js
-│   ├── dashboard/        # User dashboard and recommendation history
-│   ├── group/            # Collaborative group chat and polling pages
-│   │   └── [id]/         # Dynamic route for specific group sessions
-│   ├── constants.ts      # Global constants for the app
-│   ├── globals.css       # Global styles including Tailwind imports
-│   ├── layout.tsx        # Root layout for the application
-│   └── page.tsx          # The main landing page entry point
-├── components/           # Reusable UI components
-│   ├── chat/             # Chat UI, message bubbles, polls
-│   ├── landing/          # Components specific to the landing page experience
+├── app/                      # Next.js App Router - Pages, layouts, and API routes
+│   ├── (auth)/               # Authentication route group (Login/Register) [stub]
+│   ├── (main)/               # Main authenticated app route group
+│   │   ├── discover/         # AI-powered place discovery page
+│   │   │   └── page.tsx
+│   │   └── layout.tsx        # Shared layout for main app routes
+│   ├── api/                  # Backend API routes for Next.js [stub]
+│   ├── dashboard/            # User dashboard and recommendation history [stub]
+│   ├── group/                # Collaborative group chat and polling pages
+│   │   └── [id]/             # Dynamic route for specific group sessions [stub]
+│   ├── constants.ts          # Global constants for the app
+│   ├── globals.css           # Global styles including Tailwind imports
+│   ├── icon.png              # App icon
+│   ├── layout.tsx            # Root layout for the application
+│   └── page.tsx              # The main landing page entry point
+├── components/               # Reusable UI components
+│   ├── chat/                 # Chat UI, message bubbles, polls [stub]
+│   ├── landing/              # Components specific to the landing page
 │   │   ├── AboutDrawer.tsx   # Drawer component for "About" section
 │   │   ├── Header.tsx        # Navigation header
 │   │   ├── HeroSection.tsx   # Main hero banner with call to actions
@@ -63,17 +68,42 @@ vibe-spot/
 │   │   ├── Toast.tsx         # Notification toast component
 │   │   ├── constants.ts      # Constants used within landing components
 │   │   └── landing.css       # Specific styles for the landing page
-│   ├── maps/             # Mapbox visual components and markers
-│   ├── recommendations/  # AI recommendation cards, preference inputs
-│   └── ui/               # Generic UI elements (Buttons, Inputs, Modals)
-├── lib/                  # Utility functions and external service clients
-│   ├── ai/               # AI prompt logic and OpenRouter integration
-│   ├── maps/             # Mapbox and Google Places API helpers
-│   └── supabase/         # Supabase client setup
-├── hooks/                # Custom React hooks (e.g., useAuth, useMap)
-├── store/                # Global state management (Zustand/Redux)
-└── types/                # TypeScript interfaces and type definitions
+│   ├── layout/               # App-wide layout components
+│   │   ├── app-sidebar.tsx   # Main application sidebar
+│   │   └── mobile-trigger.tsx # Mobile sidebar toggle trigger
+│   ├── maps/                 # Mapbox visual components and markers [stub]
+│   ├── recommendations/      # AI recommendation components
+│   │   └── preference-wizard.tsx # Multi-step user preference input wizard
+│   └── ui/                   # shadcn/ui and generic UI primitives
+│       ├── button.tsx
+│       ├── dropdown-menu.tsx
+│       ├── input.tsx
+│       ├── popover.tsx
+│       ├── separator.tsx
+│       ├── sheet.tsx
+│       ├── sidebar.tsx
+│       ├── skeleton.tsx
+│       ├── slider.tsx
+│       └── tooltip.tsx
+├── lib/                      # Utility functions and external service clients
+│   ├── ai/                   # AI prompt logic and OpenRouter integration [stub]
+│   ├── maps/                 # Mapbox and Google Places API helpers [stub]
+│   ├── supabase/             # Supabase client setup [stub]
+│   └── utils.ts              # Shared utility helpers (e.g., cn())
+├── hooks/                    # Custom React hooks
+│   └── use-mobile.ts         # Hook for mobile breakpoint detection
+├── public/                   # Static assets
+│   ├── vibe_spot_logo_landing.png
+│   ├── vibespot_logo_white_nobg.png
+│   ├── friends.png
+│   ├── location.png
+│   ├── mood.png
+│   └── wallet.png
+├── store/                    # Global state management [stub]
+└── types/                    # TypeScript interfaces and type definitions [stub]
 ```
+
+> **[stub]** directories exist in the file system but are currently empty, awaiting feature implementation.
 
 ## Getting Started
 

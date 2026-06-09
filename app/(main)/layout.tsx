@@ -1,7 +1,7 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { MobileTrigger } from "@/components/layout/mobile-trigger";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { RecommendationProvider } from "@/store/recommendation-context";
+import { TooltipProvider } from "@/components/ui/tooltip"; // 1. Import the provider
 
 export default function MainLayout({
   children,
@@ -9,16 +9,16 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider defaultOpen={false}>
-      <TooltipProvider>
-        <AppSidebar />
-        <main className="flex-1 h-screen overflow-y-auto bg-surface-page/95 backdrop-blur-md relative">
-          <div className="md:hidden absolute top-4 left-4 z-50">
-            <MobileTrigger />
-          </div>
-          {children}
-        </main>
+    <RecommendationProvider>
+      {/* 2. Wrap the Sidebar and main content with the TooltipProvider */}
+      <TooltipProvider delayDuration={0}>
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="flex-1 w-full h-screen overflow-hidden bg-surface-page">
+            {children}
+          </main>
+        </SidebarProvider>
       </TooltipProvider>
-    </SidebarProvider>
+    </RecommendationProvider>
   );
 }
