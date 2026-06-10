@@ -1,15 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
-import { MOCK_RECOMMENDATIONS } from "@/lib/mock-data";
-
-type Recommendation = (typeof MOCK_RECOMMENDATIONS)[0];
+import { MOCK_RECOMMENDATIONS, type Recommendation } from "@/lib/mock-data";
 
 interface RecContextType {
   recentRecommendations: Recommendation[];
   activeRecommendation: Recommendation | null;
-  generateNewRecommendation: () => Promise<void>;
-  setActiveRecommendation: (rec: Recommendation) => void;
+  generateNewRecommendation: (scope: "anywhere" | "near") => Promise<string>;
+  setActiveRecommendation: (rec: Recommendation | null) => void;
 }
 
 const RecContext = createContext<RecContextType | undefined>(undefined);
@@ -25,16 +23,17 @@ export function RecommendationProvider({
   const [activeRecommendation, setActiveRecommendation] =
     useState<Recommendation | null>(null);
 
-  const generateNewRecommendation = async () => {
-    // Randomly pick one of our mock itineraries to simulate AI generation
-    const randomRec =
-      MOCK_RECOMMENDATIONS[
-        Math.floor(Math.random() * MOCK_RECOMMENDATIONS.length)
-      ];
-    const newRec = { ...randomRec, id: `session-${Date.now()}` };
+  const generateNewRecommendation = async (scope: "anywhere" | "near") => {
+    // Pick the right base recommendation based on the wizard scope
+    const base =
+      scope === "near" ? MOCK_RECOMMENDATIONS[1] : MOCK_RECOMMENDATIONS[0];
+    const newRec: Recommendation = { ...base, id: `session-${Date.now()}` };
 
+    // Push to recents immediately (ChatGPT-style: shows up as soon as session starts)
     setRecentRecommendations((prev) => [newRec, ...prev]);
     setActiveRecommendation(newRec);
+    
+    return newRec.id;
   };
 
   return (

@@ -4,10 +4,15 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { MOCK_RECOMMENDATIONS } from "@/lib/mock-data";
+import {
+  MORE_COFFEE_SHOPS,
+  USER_LOCATION,
+  type Location,
+} from "@/lib/mock-data";
 import { useRecommendations } from "@/store/recommendation-context";
 import { MobileTrigger } from "@/components/layout/mobile-trigger";
-import { useSidebar } from "@/components/ui/sidebar"; // 1. Import the sidebar hook
+import { useSidebar } from "@/components/ui/sidebar";
+import { useSearchParams } from "next/navigation";
 import {
   MapPin,
   CreditCard,
@@ -21,6 +26,7 @@ import {
   Star,
   Compass,
   PlaySquare,
+  Clock,
 } from "lucide-react";
 
 // Dynamically import Leaflet
@@ -32,10 +38,13 @@ const MapWrapper = dynamic(() => import("../maps/leaflet-map"), {
 export function ShowcaseView() {
   const { activeRecommendation, setActiveRecommendation } =
     useRecommendations();
-  const { openMobile } = useSidebar(); // 2. Initialize the hook to track mobile sidebar state
+  const { openMobile } = useSidebar();
+  const searchParams = useSearchParams();
+  const isNew = searchParams.get("new") === "true";
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [imageIndex, setImageIndex] = useState(0); // index within currentLocation.images
+  const [isPlaying, setIsPlaying] = useState(isNew);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showMoreList, setShowMoreList] = useState(false);
 
@@ -57,6 +66,11 @@ export function ShowcaseView() {
     return () => clearTimeout(timer);
   }, [activeIndex, isPlaying, locations.length, showMoreList]);
 
+  // Reset image index whenever the active location changes
+  useEffect(() => {
+    setImageIndex(0);
+  }, [activeIndex]);
+
   // Handle clicking a map marker
   const handleMarkerClick = (index: number) => {
     setIsPlaying(false);
@@ -64,29 +78,31 @@ export function ShowcaseView() {
     if (showMoreList) setShowMoreList(false);
   };
 
-  // Add new recommendation to the current showcase
-  const handleAddRecommendation = (rec: any) => {
+  // Promote a "more" card into the main showcase (appended at the end)
+  const handlePromoteToShowcase = (shop: Location) => {
     if (!activeRecommendation) return;
 
-    // Append the new locations to the existing ones
-    const updatedLocations = [
-      ...activeRecommendation.locations,
-      ...rec.locations,
-    ];
+    // Append so existing positions are undisturbed
+    const updatedLocations = [...activeRecommendation.locations, shop];
 
-    // Update the active recommendation with the merged list
     setActiveRecommendation({
       ...activeRecommendation,
       locations: updatedLocations,
     });
 
-    // Jump immediately to the first newly added location, stop playing, close list
-    setActiveIndex(activeRecommendation.locations.length);
+    // Jump to the newly appended shop (last index), stop auto-play, close panel
+    setActiveIndex(updatedLocations.length - 1);
     setIsPlaying(false);
     setShowMoreList(false);
   };
 
   if (!activeRecommendation || !currentLocation) return null;
+
+  // "More" shops = full pool minus any already in the current showcase
+  const currentIds = new Set(locations.map((l) => l.id));
+  const availableMoreShops = MORE_COFFEE_SHOPS.filter(
+    (s) => !currentIds.has(s.id),
+  );
 
   return (
     <div className="flex flex-col-reverse md:flex-row h-screen w-full bg-surface-page overflow-hidden relative">
@@ -99,7 +115,7 @@ export function ShowcaseView() {
             onClick={(e) => e.stopPropagation()}
           />
 
-          {/* Presenting Banner - Hide on mobile if sidebar is open */}
+          {/* Presenting Banner */}
           <div
             className={`absolute inset-x-0 top-0 z-[1600] pointer-events-none flex justify-center mt-6 ${openMobile ? "hidden md:flex" : "flex"}`}
           >
@@ -129,7 +145,7 @@ export function ShowcaseView() {
         </>
       )}
 
-      {/* MOBILE SIDEBAR TRIGGER - 3. Hide if the sidebar is currently open */}
+      {/* MOBILE SIDEBAR TRIGGER */}
       {!openMobile && (
         <div className="md:hidden absolute top-4 left-4 z-[1000]">
           <MobileTrigger />
@@ -142,59 +158,109 @@ export function ShowcaseView() {
       >
         <AnimatePresence mode="wait">
           {showMoreList ? (
-            /* --- EXPLORE MORE LIST VIEW --- */
+            /* --- MORE RECOMMENDATIONS PANEL --- */
             <motion.div
               key="more-list"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
-              className="p-6 pb-12 pt-16 md:pt-6" // extra top padding for mobile to clear the trigger
+              className="p-6 pb-12 pt-16 md:pt-6"
             >
               <button
                 onClick={() => setShowMoreList(false)}
-                className="flex items-center gap-2 text-emerald-600 font-bold text-xl mb-8 hover:-translate-x-1 transition-transform"
+                className="flex items-center gap-1.5 text-emerald-600 font-semibold text-sm mb-4 hover:-translate-x-1 transition-transform"
               >
-                <ChevronLeft size={24} strokeWidth={3} /> More Recommendations
+                <ChevronLeft size={16} strokeWidth={2.5} /> Back
               </button>
+              <h2 className="text-xl font-bold text-stone-900 mb-1">
+                Explore More Recommendations
+              </h2>
+              <p className="text-sm text-stone-400 mb-8">
+                Click any card to feature it in your showcase
+              </p>
 
-              <div className="flex flex-col gap-8">
-                {MOCK_RECOMMENDATIONS.filter(
-                  (r) => r.title !== activeRecommendation.title,
-                ).map((rec) => {
-                  const repLocation = rec.locations[0];
-                  return (
-                    <div
-                      key={rec.id}
-                      onClick={() => handleAddRecommendation(rec)}
-                      className="group cursor-pointer bg-stone-50 border border-transparent hover:border-emerald-100 rounded-2xl p-3 transition-all"
+              {availableMoreShops.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mb-4">
+                    <Compass size={28} className="text-emerald-400" />
+                  </div>
+                  <p className="text-stone-500 font-semibold">
+                    You've explored them all!
+                  </p>
+                  <p className="text-stone-400 text-sm mt-1">
+                    All recommendations have been added to your showcase.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {availableMoreShops.map((shop) => (
+                    <motion.div
+                      key={shop.id}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handlePromoteToShowcase(shop)}
+                      className="group cursor-pointer bg-stone-50 border border-transparent hover:border-emerald-200 hover:bg-white rounded-2xl overflow-hidden transition-all shadow-sm hover:shadow-md"
                     >
-                      <div className="w-full h-48 rounded-xl overflow-hidden mb-4 relative shadow-sm">
+                      {/* Card image */}
+                      <div className="w-full h-40 relative overflow-hidden">
                         <img
-                          src={repLocation.images[0]}
-                          alt={repLocation.name}
+                          src={shop.images[0]}
+                          alt={shop.name}
                           className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                         />
-                        <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-md">
-                          + {rec.locations.length} Places
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+
+                        {/* Category badge */}
+                        <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wide">
+                          {shop.category}
+                        </div>
+
+                        {/* Shop name on image */}
+                        <div className="absolute bottom-3 left-3 right-3">
+                          <h3 className="text-white font-bold text-base leading-tight drop-shadow">
+                            {shop.name}
+                          </h3>
+                          <p className="text-white/80 text-xs mt-0.5 flex items-center gap-1">
+                            <MapPin size={10} />
+                            {shop.address}
+                          </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 mb-2 px-1">
-                        <h3 className="text-lg font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">
-                          {rec.title}
-                        </h3>
-                      </div>
-                      <p className="text-sm text-stone-500 leading-relaxed line-clamp-3 px-1">
-                        Includes: {rec.locations.map((l) => l.name).join(", ")}
-                      </p>
 
-                      <div className="mt-4 px-1 text-xs font-bold text-emerald-500 uppercase flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        Click to add to your showcase <ChevronRight size={14} />
+                      {/* Card body */}
+                      <div className="p-3.5">
+                        <p className="text-xs text-stone-500 leading-relaxed line-clamp-2 mb-3">
+                          {shop.description}
+                        </p>
+
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {shop.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="bg-white border border-stone-200 text-stone-500 text-[10px] font-medium px-2 py-0.5 rounded-full"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Hours + CTA row */}
+                        <div className="flex items-center justify-between">
+                          <span className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                            <Clock size={10} />
+                            {shop.hours}
+                          </span>
+                          <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            Feature this <ChevronRight size={13} />
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           ) : (
             /* --- SINGLE LOCATION VIEW --- */
@@ -206,13 +272,20 @@ export function ShowcaseView() {
               transition={{ duration: 0.3 }}
               className="flex-1 pb-8"
             >
-              {/* Image Carousel */}
+              {/* Image Carousel (cycles through this location's photos) */}
               <div className="w-full h-64 md:h-72 mb-6 relative">
-                <img
-                  src={currentLocation.images[0]}
-                  alt={currentLocation.name}
-                  className="object-cover w-full h-full"
-                />
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={`${currentLocation.id}-img-${imageIndex}`}
+                    src={currentLocation.images[imageIndex]}
+                    alt={currentLocation.name}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="object-cover w-full h-full absolute inset-0"
+                  />
+                </AnimatePresence>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
 
                 {/* Location counter out of total showcase */}
@@ -220,12 +293,36 @@ export function ShowcaseView() {
                   {activeIndex + 1} / {locations.length}
                 </div>
 
-                <button className="absolute left-4 top-1/2 -translate-y-1/2 text-white/90 hover:text-white drop-shadow-md hover:scale-110 transition">
-                  <ChevronLeft size={36} strokeWidth={2} />
-                </button>
-                <button className="absolute right-4 top-1/2 -translate-y-1/2 text-white/90 hover:text-white drop-shadow-md hover:scale-110 transition">
-                  <ChevronRight size={36} strokeWidth={2} />
-                </button>
+                {/* Photo counter — only shown when there are multiple images */}
+                {currentLocation.images.length > 1 && (
+                  <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full">
+                    {imageIndex + 1} / {currentLocation.images.length}
+                  </div>
+                )}
+
+                {/* Photo prev/next — only shown when there are multiple images */}
+                {currentLocation.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setImageIndex((prev) => Math.max(0, prev - 1))}
+                      disabled={imageIndex === 0}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-white/90 hover:text-white drop-shadow-md hover:scale-110 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft size={36} strokeWidth={2} />
+                    </button>
+                    <button
+                      onClick={() =>
+                        setImageIndex((prev) =>
+                          Math.min(currentLocation.images.length - 1, prev + 1),
+                        )
+                      }
+                      disabled={imageIndex === currentLocation.images.length - 1}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/90 hover:text-white drop-shadow-md hover:scale-110 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight size={36} strokeWidth={2} />
+                    </button>
+                  </>
+                )}
               </div>
 
               <div className="px-6">
@@ -359,13 +456,18 @@ export function ShowcaseView() {
                   </div>
                 </div>
 
-                {/* Explore More Button */}
-                <button
-                  onClick={() => setShowMoreList(true)}
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(16,185,129,0.3)] transition-all hover:shadow-[0_6px_20px_rgba(16,185,129,0.4)] active:scale-[0.98]"
-                >
-                  <Compass size={20} /> Explore More Recommendations
-                </button>
+                {/* Explore More Recommendations Button */}
+                {availableMoreShops.length > 0 && (
+                  <button
+                    onClick={() => setShowMoreList(true)}
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(16,185,129,0.3)] transition-all hover:shadow-[0_6px_20px_rgba(16,185,129,0.4)] active:scale-[0.98]"
+                  >
+                    <Compass size={20} /> Explore More Recommendations
+                    <span className="ml-1 bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                      {availableMoreShops.length}
+                    </span>
+                  </button>
+                )}
               </div>
             </motion.div>
           )}
@@ -384,9 +486,13 @@ export function ShowcaseView() {
           locations={locations}
           activeIndex={activeIndex}
           onMarkerClick={handleMarkerClick}
+          radiusKm={activeRecommendation.mode === "near" ? 7.5 : undefined}
+          userLocation={
+            activeRecommendation.mode === "near" ? USER_LOCATION : undefined
+          }
         />
 
-        {/* Map Overlay: Top Navigation Controls - 4. Hide on mobile if sidebar is open */}
+        {/* Map Overlay: Top Navigation Controls */}
         <div
           className={`absolute top-5 right-5 md:left-5 md:right-auto z-[1000] gap-3 ${openMobile ? "hidden md:flex" : "flex"}`}
         >
@@ -417,7 +523,7 @@ export function ShowcaseView() {
           </button>
         </div>
 
-        {/* Map Overlay: Full Screen Toggle - 5. Hide on mobile if sidebar is open */}
+        {/* Map Overlay: Full Screen Toggle */}
         <div
           className={`absolute bottom-6 right-6 z-[1000] ${openMobile ? "hidden md:block" : "block"}`}
         >

@@ -1,33 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { PreferenceWizard } from "@/components/recommendations/preference-wizard";
-import { LoadingScreen } from "@/components/recommendations/loading-screen";
-import { ShowcaseView } from "@/components/recommendations/showcase";
 import { useRecommendations } from "@/store/recommendation-context";
 
 export default function DiscoverPage() {
-  const [view, setView] = useState<"wizard" | "loading" | "showcase">("wizard");
-  const { generateNewRecommendation } = useRecommendations();
+  const router = useRouter();
+  const { generateNewRecommendation, setActiveRecommendation } = useRecommendations();
 
-  const handleWizardComplete = () => {
-    setView("loading");
-    // Trigger the context to begin generating in the background
-    generateNewRecommendation();
+  useEffect(() => {
+    setActiveRecommendation(null);
+  }, [setActiveRecommendation]);
+
+  const handleWizardComplete = async (scope: "anywhere" | "near") => {
+    // Generate the recommendation and get its ID
+    const newId = await generateNewRecommendation(scope);
+    
+    // Redirect to the new recommendation's URL with the ?new=true flag 
+    // to trigger the loading screen on the destination page
+    router.push(`/recommendations/${newId}?new=true`);
   };
 
-  const handleLoadingComplete = () => {
-    setView("showcase");
-  };
-
-  if (view === "loading") {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
-  }
-
-  if (view === "showcase") {
-    return <ShowcaseView />;
-  }
-
-  // Default: Wizard
   return <PreferenceWizard onComplete={handleWizardComplete} />;
 }
