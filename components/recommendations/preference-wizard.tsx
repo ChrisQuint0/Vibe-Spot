@@ -1,9 +1,12 @@
+// components/recommendations/preference-wizard.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { MobileTrigger } from "@/components/layout/mobile-trigger"; // 1. Import MobileTrigger
+import { useSidebar } from "@/components/ui/sidebar"; // 2. Import Sidebar hook
 
 import {
   Coffee,
@@ -104,13 +107,11 @@ function StepIllustration({
 }) {
   return (
     <div className="relative w-40 h-40 flex items-center justify-center mb-6">
-      {/* Bare floating image — no card container */}
       <motion.div
         animate={{ y: [0, -7, 0], rotate: [0, 0.5, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         className="relative w-32 h-32"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageSrc}
           alt=""
@@ -119,7 +120,6 @@ function StepIllustration({
         />
       </motion.div>
 
-      {/* Floating badges */}
       <motion.span
         animate={{ y: [0, -5, 0] }}
         transition={{
@@ -242,6 +242,8 @@ function OptionButton({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function PreferenceWizard({ onComplete }: { onComplete: () => void }) {
+  const { openMobile } = useSidebar(); // 3. Get mobile sidebar state
+
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
   const [exampleIndex, setExampleIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
@@ -258,7 +260,6 @@ export function PreferenceWizard({ onComplete }: { onComplete: () => void }) {
             setAnimatedPlaceholder(current.slice(0, charIndex + 1));
             setCharIndex((c) => c + 1);
           } else {
-            // Pause at end before deleting
             setTimeout(() => setIsDeleting(true), 1600);
           }
         } else {
@@ -326,6 +327,13 @@ export function PreferenceWizard({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center px-4 pt-16 pb-8 md:p-6 overflow-hidden relative">
+      {/* 4. MOBILE SIDEBAR TRIGGER */}
+      {!openMobile && (
+        <div className="md:hidden absolute top-4 left-4 z-[1000]">
+          <MobileTrigger />
+        </div>
+      )}
+
       {/* ── Animated blob background ── */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <motion.div
