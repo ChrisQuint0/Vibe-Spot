@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Search,
   Heart,
@@ -42,12 +43,24 @@ import {
 import { useRecommendations } from "@/store/recommendation-context";
 
 export function AppSidebar() {
-  const { state, isMobile, toggleSidebar } = useSidebar();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { state, isMobile, toggleSidebar, setOpenMobile } = useSidebar();
   const [isLogoHovered, setIsLogoHovered] = useState(false);
 
+  const handleNavigate = (path: string) => {
+    router.push(path);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
   // 2. INITIALIZE THE HOOK TO GET DYNAMIC RECENTS
-  const { recentRecommendations, setActiveRecommendation } =
-    useRecommendations();
+  const {
+    recentRecommendations,
+    activeRecommendation,
+    setActiveRecommendation,
+  } = useRecommendations();
 
   // On mobile the sidebar renders as a Sheet drawer, so always treat it as expanded
   const isExpanded = isMobile || state === "expanded";
@@ -118,7 +131,11 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu className="gap-2 mt-4">
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Discover" isActive>
+              <SidebarMenuButton 
+                tooltip="Discover" 
+                isActive={pathname === "/discover"} 
+                onClick={() => handleNavigate("/discover")}
+              >
                 <Search className="text-brand-primary" />
                 <span>Discover</span>
               </SidebarMenuButton>
@@ -146,22 +163,31 @@ export function AppSidebar() {
                 <div className="h-px bg-border-secondary w-full mb-3" />
 
                 {/* 3a. DYNAMIC MAPPING FOR EXPANDED SIDEBAR */}
+                {/* 3a. DYNAMIC MAPPING FOR EXPANDED SIDEBAR */}
                 <ul className="space-y-3">
                   {recentRecommendations.length === 0 ? (
                     <li className="text-xs text-text-secondary italic px-1">
                       No recent searches
                     </li>
                   ) : (
-                    recentRecommendations.map((rec) => (
-                      <li
-                        key={rec.id}
-                        onClick={() => setActiveRecommendation(rec)}
-                        className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors truncate"
-                      >
-                        {rec.title}
-                      </li>
-                    ))
-                  )}
+                    recentRecommendations.map((rec) => {
+                      const isActive = rec.id === activeRecommendation?.id;
+                      return (
+                        <li
+                          key={rec.id}
+                          onClick={() => handleNavigate(`/recommendations/${rec.id}`)}
+                          className={`text-sm cursor-pointer transition-colors truncate px-2 py-1.5 rounded-md ${
+                            isActive
+                              ? "bg-emerald-50 text-emerald-600 font-semibold"
+                              : "text-text-secondary hover:bg-stone-50 hover:text-brand-primary"
+                          }`}
+                        >
+                          {rec.title}
+                        </li>
+                      );
+                    })
+                  )}{" "}
+                  {/* <--- Don't forget to close the false branch here */}
                 </ul>
               </div>
             ) : (
@@ -183,22 +209,32 @@ export function AppSidebar() {
                     </h3>
 
                     {/* 3b. DYNAMIC MAPPING FOR COLLAPSED POPOVER */}
+                    {/* 3b. DYNAMIC MAPPING FOR COLLAPSED POPOVER */}
                     <ul className="space-y-2">
                       {recentRecommendations.length === 0 ? (
                         <li className="text-xs text-text-secondary italic">
                           No recent searches
                         </li>
                       ) : (
-                        recentRecommendations.map((rec) => (
-                          <li
-                            key={rec.id}
-                            onClick={() => setActiveRecommendation(rec)}
-                            className="text-sm text-text-secondary hover:text-brand-primary cursor-pointer transition-colors truncate"
-                          >
-                            {rec.title}
-                          </li>
-                        ))
-                      )}
+                        // <--- Add the closing parenthesis and colon here!
+                        recentRecommendations.map((rec) => {
+                          const isActive = rec.id === activeRecommendation?.id;
+                          return (
+                            <li
+                              key={rec.id}
+                              onClick={() => handleNavigate(`/recommendations/${rec.id}`)}
+                              className={`text-sm cursor-pointer transition-colors truncate px-2 py-1.5 rounded-md ${
+                                isActive
+                                  ? "bg-emerald-50 text-emerald-600 font-semibold"
+                                  : "text-text-secondary hover:bg-stone-50 hover:text-brand-primary"
+                              }`}
+                            >
+                              {rec.title}
+                            </li>
+                          );
+                        })
+                      )}{" "}
+                      {/* <--- Don't forget to close the false branch here */}
                     </ul>
                   </PopoverContent>
                 </Popover>

@@ -241,7 +241,11 @@ function OptionButton({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function PreferenceWizard({ onComplete }: { onComplete: () => void }) {
+export function PreferenceWizard({
+  onComplete,
+}: {
+  onComplete: (scope: "anywhere" | "near") => void;
+}) {
   const { openMobile } = useSidebar(); // 3. Get mobile sidebar state
 
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState("");
@@ -302,7 +306,7 @@ export function PreferenceWizard({ onComplete }: { onComplete: () => void }) {
 
   const nextStep = () => {
     if (currentStep < STEPS.length - 1) setCurrentStep((prev) => prev + 1);
-    else onComplete();
+    else onComplete(preferences.scope);
   };
 
   const prevStep = () => setCurrentStep((prev) => Math.max(0, prev - 1));
