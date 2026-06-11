@@ -27,6 +27,7 @@ import {
   Compass,
   PlaySquare,
   Clock,
+  X,
 } from "lucide-react";
 
 // Dynamically import Leaflet
@@ -47,9 +48,18 @@ export function ShowcaseView() {
   const [isPlaying, setIsPlaying] = useState(isNew);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showMoreList, setShowMoreList] = useState(false);
+  const [showReviews, setShowReviews] = useState(false);
 
   const locations = activeRecommendation?.locations || [];
   const currentLocation = locations[activeIndex];
+
+  const dummyReviews = [
+    { id: 1, author: "Alex D.", rating: 5, date: "2 weeks ago", text: `Absolutely love ${currentLocation?.name}! The atmosphere is perfect and the service is top-notch. Will definitely come back.` },
+    { id: 2, author: "Maria S.", rating: 4, date: "1 month ago", text: "Great spot for a quick break. The coffee is quite good, though it can get a bit crowded during peak hours." },
+    { id: 3, author: "John Doe", rating: 5, date: "3 months ago", text: "One of my favorite places in the city. The staff is always friendly and the quality is consistent." },
+    { id: 4, author: "Emma W.", rating: 5, date: "4 months ago", text: "Fantastic experience. I highly recommend checking out their specials. The ambiance is exactly what I was looking for." },
+    { id: 5, author: "Chris T.", rating: 4, date: "5 months ago", text: "Very nice place. A bit on the pricey side, but you definitely get what you pay for. Good vibes overall." },
+  ];
 
   // Auto-advance logic
   useEffect(() => {
@@ -106,6 +116,74 @@ export function ShowcaseView() {
 
   return (
     <div className="flex flex-col-reverse md:flex-row h-screen w-full bg-surface-page overflow-hidden relative">
+      {/* REVIEWS MODAL */}
+      <AnimatePresence>
+        {showReviews && (
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+              onClick={() => setShowReviews(false)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white rounded-2xl shadow-2xl z-10 w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden relative"
+            >
+              <div className="flex items-center justify-between p-4 border-b border-stone-100">
+                <div>
+                  <h3 className="font-bold text-lg text-stone-900">{currentLocation.name} Reviews</h3>
+                  <div className="flex items-center mt-1">
+                    <Star size={14} className="fill-amber-400 text-amber-400" />
+                    <span className="font-bold text-sm ml-1 text-stone-800">4.7</span>
+                    <span className="text-xs text-stone-500 ml-1">(589 reviews)</span>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowReviews(false)}
+                  className="p-2 bg-stone-50 hover:bg-stone-100 text-stone-500 rounded-full transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              
+              <div className="overflow-y-auto p-4 space-y-4 minimal-scrollbar">
+                {dummyReviews.map((review) => (
+                  <div key={review.id} className="border-b border-stone-50 last:border-0 pb-4 last:pb-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-bold text-xs">
+                          {review.author.charAt(0)}
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-stone-800">{review.author}</div>
+                          <div className="text-[10px] text-stone-400">{review.date}</div>
+                        </div>
+                      </div>
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            size={12} 
+                            className={i < review.rating ? "fill-amber-400 text-amber-400" : "fill-stone-200 text-stone-200"} 
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-sm text-stone-600 leading-relaxed">
+                      {review.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* INTERACTION BLOCKER & PRESENTING LABEL */}
       {isPlaying && (
         <>
@@ -346,7 +424,10 @@ export function ShowcaseView() {
                   <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-md">
                     {currentLocation.category}
                   </span>
-                  <div className="flex items-center">
+                  <div 
+                    className="flex items-center cursor-pointer hover:bg-stone-100 p-1.5 -ml-1.5 rounded-md transition-colors"
+                    onClick={() => setShowReviews(true)}
+                  >
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
@@ -357,7 +438,7 @@ export function ShowcaseView() {
                     <span className="font-bold text-sm ml-1.5 text-stone-800">
                       4.7
                     </span>
-                    <span className="text-xs text-stone-400 ml-1">
+                    <span className="text-xs text-stone-400 ml-1 hover:underline">
                       (589 reviews)
                     </span>
                   </div>
