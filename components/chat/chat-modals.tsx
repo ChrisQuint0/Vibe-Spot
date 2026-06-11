@@ -336,3 +336,47 @@ export function PollCreationModal({
     </div>
   );
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EDIT HISTORY MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+interface EditHistoryModalProps {
+  history: { text: string; time: string }[];
+  onClose: () => void;
+}
+
+export function EditHistoryModal({ history, onClose }: EditHistoryModalProps) {
+  return (
+    <div
+      className="fixed inset-0 z-[2000] flex items-center justify-center bg-stone-900/40 backdrop-blur-sm p-4 chat-modal-enter"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[80vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="bg-stone-50 p-4 border-b border-stone-100 flex justify-between items-center shrink-0">
+          <h3 className="font-bold text-stone-900">Edit History</h3>
+          <button
+            onClick={onClose}
+            className="text-stone-400 hover:text-stone-600 p-1 rounded-lg hover:bg-stone-100 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <div className="p-4 overflow-y-auto minimal-scrollbar flex-1 space-y-4">
+          {history.length === 0 ? (
+            <p className="text-sm text-stone-500 text-center">No edit history available.</p>
+          ) : (
+            history.map((item, idx) => (
+              <div key={idx} className="bg-stone-50 rounded-xl p-3 border border-stone-100">
+                <p className="text-xs text-stone-400 font-medium mb-1.5">{item.time}</p>
+                <p className="text-sm text-stone-700 whitespace-pre-wrap">{item.text}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

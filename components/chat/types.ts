@@ -37,6 +37,11 @@ export type Message = {
     options: PollOption[];
   };
   place?: PlaceData;
+  isDeletedForEveryone?: boolean;
+  deletedForUsers?: string[];
+  editCount?: number;
+  isEdited?: boolean;
+  editHistory?: { text: string; time: string }[];
 };
 
 export type ChatType = "group" | "dm";

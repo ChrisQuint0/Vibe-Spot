@@ -35,6 +35,7 @@ import {
   VotersModal,
   ImageLightbox,
   PollCreationModal,
+  EditHistoryModal,
 } from "@/components/chat/chat-modals";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -64,6 +65,7 @@ export default function ChatPage() {
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
   const [expandedPlace, setExpandedPlace] = useState<PlaceData | null>(null);
   const [votersModal, setVotersModal] = useState<VotersModalData>(null);
+  const [editHistoryModal, setEditHistoryModal] = useState<{ text: string; time: string }[] | null>(null);
 
   // ── Helpers ─────────────────────────────────────────────────────────────
   const updateChat = useCallback(
@@ -138,7 +140,53 @@ export default function ChatPage() {
     [activeChatId, activeChat.messages, updateChat],
   );
 
-  // ── Create DM ───────────────────────────────────────────────────────────
+  // ── Delete Message ──────────────────────────────────────────────────────
+  const handleDeleteMessage = useCallback(
+    (messageId: string, type: "me" | "everyone") => {
+      const updatedMessages = activeChat.messages.map((msg) => {
+        if (msg.id === messageId) {
+          if (type === "everyone") {
+            return { ...msg, isDeletedForEveryone: true };
+          } else {
+            return {
+              ...msg,
+              deletedForUsers: [...(msg.deletedForUsers || []), MY_ID],
+            };
+          }
+        }
+        return msg;
+      });
+      updateChat(activeChatId, { messages: updatedMessages });
+    },
+    [activeChat.messages, activeChatId, updateChat],
+  );
+
+  // ── Edit Message ────────────────────────────────────────────────────────
+  const handleEditMessage = useCallback(
+    (messageId: string, newText: string) => {
+      const updatedMessages = activeChat.messages.map((msg) => {
+        if (msg.id === messageId && msg.type === "text") {
+          const count = msg.editCount || 0;
+          if (count >= 5) return msg; // Prevent further edits
+          const history = msg.editHistory || [];
+          return {
+            ...msg,
+            text: newText,
+            isEdited: true,
+            editCount: count + 1,
+            editHistory: [
+              ...history,
+              { text: msg.text || "", time: msg.time },
+            ],
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          };
+        }
+        return msg;
+      });
+      updateChat(activeChatId, { messages: updatedMessages });
+    },
+    [activeChat.messages, activeChatId, updateChat],
+  );
   const handleCreateDm = useCallback(
     (friendId: string) => {
       // Check if DM already exists
@@ -362,12 +410,20 @@ export default function ChatPage() {
         onDeleteChat={handleDeleteChat}
       />
       <ChatMessages
-        chat={activeChat}
+        chat={{
+          ...activeChat,
+          messages: activeChat.messages.filter(
+            (m) => !(m.deletedForUsers || []).includes(MY_ID)
+          ),
+        }}
         onExpandImage={setExpandedImage}
         onExpandPlace={setExpandedPlace}
         onToggleVote={handleToggleVote}
         onAddPollOption={handleAddPollOption}
         onShowVoters={(label, voters) => setVotersModal({ label, voters })}
+        onDeleteMessage={handleDeleteMessage}
+        onEditMessage={handleEditMessage}
+        onShowEditHistory={setEditHistoryModal}
       />
       <ChatInput
         onSendMessage={handleSendMessage}
@@ -485,6 +541,12 @@ export default function ChatPage() {
         <VotersModal
           data={votersModal}
           onClose={() => setVotersModal(null)}
+        />
+      )}
+      {editHistoryModal && (
+        <EditHistoryModal
+          history={editHistoryModal}
+          onClose={() => setEditHistoryModal(null)}
         />
       )}
     </div>
