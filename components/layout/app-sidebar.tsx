@@ -60,6 +60,7 @@ export function AppSidebar() {
     recentRecommendations,
     activeRecommendation,
     setActiveRecommendation,
+    savedPlaces,
   } = useRecommendations();
 
   // On mobile the sidebar renders as a Sheet drawer, so always treat it as expanded
@@ -143,9 +144,24 @@ export function AppSidebar() {
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Saved Places">
-                <Heart className="text-text-secondary" />
-                <span>Saved Places</span>
+              <SidebarMenuButton
+                tooltip="Saved Places"
+                isActive={pathname === "/saved-places"}
+                onClick={() => handleNavigate("/saved-places")}
+              >
+                <Heart
+                  className={
+                    pathname === "/saved-places"
+                      ? "text-brand-primary"
+                      : "text-text-secondary"
+                  }
+                />
+                <span className="flex-1 text-left">Saved Places</span>
+                {savedPlaces.length > 0 && (
+                  <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-auto">
+                    {savedPlaces.length}
+                  </span>
+                )}
               </SidebarMenuButton>
             </SidebarMenuItem>
 
