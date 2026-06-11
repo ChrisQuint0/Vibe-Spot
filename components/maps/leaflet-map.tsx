@@ -38,6 +38,12 @@ export default function LeafletMap({
           attribution: "&copy; OpenStreetMap contributors",
         },
       ).addTo(mapInstance.current);
+
+      // Fix blank tiles when map is inside a modal or dynamically shown container.
+      // Leaflet can't calculate the container size if it isn't fully rendered yet.
+      const map = mapInstance.current;
+      setTimeout(() => map.invalidateSize(), 200);
+      setTimeout(() => map.invalidateSize(), 500);
     }
 
     const map = mapInstance.current;

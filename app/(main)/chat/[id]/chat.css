@@ -1,0 +1,194 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   VIBE SPOT — Chat Feature Styles
+   Chat-specific animations, transitions, and micro-interactions.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Message enter animation ─────────────────────────────────────────────── */
+@keyframes chatMsgEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-msg-enter {
+  animation: chatMsgEnter 0.25s ease-out both;
+}
+
+/* ── Modal enter animation ───────────────────────────────────────────────── */
+@keyframes chatModalEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes chatModalContentEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.chat-modal-enter {
+  animation: chatModalEnter 0.2s ease-out both;
+}
+
+.chat-modal-enter > div {
+  animation: chatModalContentEnter 0.25s ease-out both;
+}
+
+/* ── Dropdown enter animation ────────────────────────────────────────────── */
+@keyframes chatDropdownEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.chat-dropdown-enter {
+  animation: chatDropdownEnter 0.15s ease-out both;
+}
+
+/* ── Typing indicator dots ───────────────────────────────────────────────── */
+.chat-typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+}
+
+.chat-typing-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8fada3; /* stone-300 */
+  animation: chatTypingBounce 1.4s ease-in-out infinite;
+}
+
+.chat-typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.chat-typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes chatTypingBounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+/* ── Online status pulse ─────────────────────────────────────────────────── */
+@keyframes chatOnlinePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(27, 143, 110, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(27, 143, 110, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(27, 143, 110, 0);
+  }
+}
+
+.chat-online-pulse {
+  animation: chatOnlinePulse 2s ease-in-out infinite;
+}
+
+/* ── Unread badge pulse ──────────────────────────────────────────────────── */
+@keyframes chatUnreadPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.chat-unread-badge {
+  animation: chatUnreadPulse 2s ease-in-out infinite;
+}
+
+/* ── Mobile slide transitions ────────────────────────────────────────────── */
+@keyframes chatSlideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes chatSlideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.chat-slide-in-right {
+  animation: chatSlideInFromRight 0.25s ease-out both;
+}
+
+.chat-slide-in-left {
+  animation: chatSlideInFromLeft 0.25s ease-out both;
+}
+
+/* ── Chat sidebar list item hover ────────────────────────────────────────── */
+.chat-list-item {
+  transition: all 0.15s ease;
+}
+
+.chat-list-item:active {
+  transform: scale(0.98);
+}
+
+/* ── Chat new button hover effect ────────────────────────────────────────── */
+.chat-new-btn {
+  transition: all 0.2s ease;
+}
+
+/* ── Chat messages area ──────────────────────────────────────────────────── */
+.chat-messages-area {
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(227, 245, 239, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(254, 248, 231, 0.2) 0%, transparent 50%);
+}
+
+/* ── Chat input focus glow ───────────────────────────────────────────────── */
+.chat-input-area {
+  backdrop-filter: blur(8px);
+}
+
+/* ── Mobile chat container ───────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .chat-mobile-list,
+  .chat-mobile-conversation {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+}

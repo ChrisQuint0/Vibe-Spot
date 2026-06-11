@@ -46,6 +46,9 @@ vibe-spot/
 │   ├── (main)/               # Main authenticated app route group
 │   │   ├── discover/         # AI-powered place discovery page
 │   │   │   └── page.tsx
+│   │   ├── recommendations/  # Recommendations showcase route group
+│   │   │   └── [id]/         # Dynamic route for specific recommendation showcase
+│   │   │       └── page.tsx  # Dynamic recommendation view page
 │   │   └── layout.tsx        # Shared layout for main app routes
 │   ├── api/                  # Backend API routes for Next.js [stub]
 │   ├── dashboard/            # User dashboard and recommendation history [stub]
@@ -71,9 +74,12 @@ vibe-spot/
 │   ├── layout/               # App-wide layout components
 │   │   ├── app-sidebar.tsx   # Main application sidebar
 │   │   └── mobile-trigger.tsx # Mobile sidebar toggle trigger
-│   ├── maps/                 # Mapbox visual components and markers [stub]
+│   ├── maps/                 # Interactive map components
+│   │   └── leaflet-map.tsx   # Interactive Leaflet map container and marker layer
 │   ├── recommendations/      # AI recommendation components
-│   │   └── preference-wizard.tsx # Multi-step user preference input wizard
+│   │   ├── loading-screen.tsx # Simulated loading screen with progress bar
+│   │   ├── preference-wizard.tsx # Multi-step user preference input wizard
+│   │   └── showcase.tsx      # Main recommendations showcase panel, UI, and reviews modal
 │   └── ui/                   # shadcn/ui and generic UI primitives
 │       ├── button.tsx
 │       ├── dropdown-menu.tsx
@@ -99,7 +105,8 @@ vibe-spot/
 │   ├── location.png
 │   ├── mood.png
 │   └── wallet.png
-├── store/                    # Global state management [stub]
+├── store/                    # Global state management
+│   └── recommendation-context.tsx # Global state and operations for recommendations
 └── types/                    # TypeScript interfaces and type definitions [stub]
 ```
 
