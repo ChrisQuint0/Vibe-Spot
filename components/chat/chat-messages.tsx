@@ -12,6 +12,9 @@ interface ChatMessagesProps {
   onToggleVote: (messageId: string, optionId: string) => void;
   onAddPollOption: (messageId: string, optionText: string) => void;
   onShowVoters: (label: string, voters: string[]) => void;
+  onDeleteMessage?: (messageId: string, type: "me" | "everyone") => void;
+  onEditMessage?: (messageId: string, newText: string) => void;
+  onShowEditHistory?: (history: { text: string; time: string }[]) => void;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -22,6 +25,9 @@ export default function ChatMessages({
   onToggleVote,
   onAddPollOption,
   onShowVoters,
+  onDeleteMessage,
+  onEditMessage,
+  onShowEditHistory,
 }: ChatMessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +61,9 @@ export default function ChatMessages({
           onToggleVote={onToggleVote}
           onAddPollOption={onAddPollOption}
           onShowVoters={onShowVoters}
+          onDeleteMessage={onDeleteMessage}
+          onEditMessage={onEditMessage}
+          onShowEditHistory={onShowEditHistory}
         />
       ))}
 
