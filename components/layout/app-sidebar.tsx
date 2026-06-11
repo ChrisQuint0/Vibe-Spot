@@ -129,11 +129,12 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
+          {/* 1. Main Navigation Menu */}
           <SidebarMenu className="gap-2 mt-4">
             <SidebarMenuItem>
-              <SidebarMenuButton 
-                tooltip="Discover" 
-                isActive={pathname === "/discover"} 
+              <SidebarMenuButton
+                tooltip="Discover"
+                isActive={pathname === "/discover"}
                 onClick={() => handleNavigate("/discover")}
               >
                 <Search className="text-brand-primary" />
@@ -149,48 +150,61 @@ export function AppSidebar() {
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Chat">
-                <MessageSquare className="text-text-secondary" />
+              <SidebarMenuButton
+                tooltip="Chat"
+                isActive={pathname.startsWith("/chat")}
+                onClick={() => handleNavigate("/chat/saturday-coffee-run")}
+              >
+                <MessageSquare
+                  className={
+                    pathname.startsWith("/chat")
+                      ? "text-brand-primary"
+                      : "text-text-secondary"
+                  }
+                />
                 <span>Chat</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+          </SidebarMenu>{" "}
+          {/* <--- CLOSE THE MAIN MENU HERE */}
+          {/* 2. Recents Section (Moved OUTSIDE the first SidebarMenu) */}
+          {isExpanded ? (
+            <div className="mt-6 px-3">
+              <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
+                Recents
+              </h3>
+              <div className="h-px bg-border-secondary w-full mb-3" />
 
-            {isExpanded ? (
-              <div className="mt-6 px-3">
-                <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
-                  Recents
-                </h3>
-                <div className="h-px bg-border-secondary w-full mb-3" />
-
-                {/* 3a. DYNAMIC MAPPING FOR EXPANDED SIDEBAR */}
-                {/* 3a. DYNAMIC MAPPING FOR EXPANDED SIDEBAR */}
-                <ul className="space-y-3">
-                  {recentRecommendations.length === 0 ? (
-                    <li className="text-xs text-text-secondary italic px-1">
-                      No recent searches
-                    </li>
-                  ) : (
-                    recentRecommendations.map((rec) => {
-                      const isActive = rec.id === activeRecommendation?.id;
-                      return (
-                        <li
-                          key={rec.id}
-                          onClick={() => handleNavigate(`/recommendations/${rec.id}`)}
-                          className={`text-sm cursor-pointer transition-colors truncate px-2 py-1.5 rounded-md ${
-                            isActive
-                              ? "bg-emerald-50 text-emerald-600 font-semibold"
-                              : "text-text-secondary hover:bg-stone-50 hover:text-brand-primary"
-                          }`}
-                        >
-                          {rec.title}
-                        </li>
-                      );
-                    })
-                  )}{" "}
-                  {/* <--- Don't forget to close the false branch here */}
-                </ul>
-              </div>
-            ) : (
+              <ul className="space-y-3">
+                {recentRecommendations.length === 0 ? (
+                  <li className="text-xs text-text-secondary italic px-1">
+                    No recent searches
+                  </li>
+                ) : (
+                  recentRecommendations.map((rec) => {
+                    const isActive = rec.id === activeRecommendation?.id;
+                    return (
+                      <li
+                        key={rec.id}
+                        onClick={() =>
+                          handleNavigate(`/recommendations/${rec.id}`)
+                        }
+                        className={`text-sm cursor-pointer transition-colors truncate px-2 py-1.5 rounded-md ${
+                          isActive
+                            ? "bg-emerald-50 text-emerald-600 font-semibold"
+                            : "text-text-secondary hover:bg-stone-50 hover:text-brand-primary"
+                        }`}
+                      >
+                        {rec.title}
+                      </li>
+                    );
+                  })
+                )}
+              </ul>
+            </div>
+          ) : (
+            // 3. Wrap the collapsed popover in its own valid SidebarMenu
+            <SidebarMenu>
               <SidebarMenuItem>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -208,21 +222,20 @@ export function AppSidebar() {
                       Recent Recommendations
                     </h3>
 
-                    {/* 3b. DYNAMIC MAPPING FOR COLLAPSED POPOVER */}
-                    {/* 3b. DYNAMIC MAPPING FOR COLLAPSED POPOVER */}
                     <ul className="space-y-2">
                       {recentRecommendations.length === 0 ? (
                         <li className="text-xs text-text-secondary italic">
                           No recent searches
                         </li>
                       ) : (
-                        // <--- Add the closing parenthesis and colon here!
                         recentRecommendations.map((rec) => {
                           const isActive = rec.id === activeRecommendation?.id;
                           return (
                             <li
                               key={rec.id}
-                              onClick={() => handleNavigate(`/recommendations/${rec.id}`)}
+                              onClick={() =>
+                                handleNavigate(`/recommendations/${rec.id}`)
+                              }
                               className={`text-sm cursor-pointer transition-colors truncate px-2 py-1.5 rounded-md ${
                                 isActive
                                   ? "bg-emerald-50 text-emerald-600 font-semibold"
@@ -233,14 +246,13 @@ export function AppSidebar() {
                             </li>
                           );
                         })
-                      )}{" "}
-                      {/* <--- Don't forget to close the false branch here */}
+                      )}
                     </ul>
                   </PopoverContent>
                 </Popover>
               </SidebarMenuItem>
-            )}
-          </SidebarMenu>
+            </SidebarMenu>
+          )}
         </SidebarGroup>
       </SidebarContent>
 
