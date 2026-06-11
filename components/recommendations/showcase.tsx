@@ -40,7 +40,7 @@ const MapWrapper = dynamic(() => import("../maps/leaflet-map"), {
 });
 
 export function ShowcaseView() {
-  const { activeRecommendation, setActiveRecommendation } =
+  const { activeRecommendation, setActiveRecommendation, toggleSavePlace, isPlaceSaved } =
     useRecommendations();
   const { openMobile } = useSidebar();
   const searchParams = useSearchParams();
@@ -53,9 +53,20 @@ export function ShowcaseView() {
   const [showMoreList, setShowMoreList] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showSaveFeedback, setShowSaveFeedback] = useState(false);
 
   const locations = activeRecommendation?.locations || [];
   const currentLocation = locations[activeIndex];
+
+  const handleSaveToggle = () => {
+    if (!currentLocation) return;
+    const isNowSaved = !isPlaceSaved(currentLocation.id);
+    toggleSavePlace(currentLocation);
+    if (isNowSaved) {
+      setShowSaveFeedback(true);
+      setTimeout(() => setShowSaveFeedback(false), 3000);
+    }
+  };
 
   const dummyReviews = [
     { id: 1, author: "Alex D.", rating: 5, date: "2 weeks ago", text: `Absolutely love ${currentLocation?.name}! The atmosphere is perfect and the service is top-notch. Will definitely come back.` },
@@ -413,9 +424,26 @@ export function ShowcaseView() {
                   <h2 className="text-2xl font-bold text-stone-900 leading-tight pr-4">
                     {currentLocation.name}
                   </h2>
-                  <div className="flex gap-2 shrink-0 mt-1">
-                    <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-[0_2px_8px_rgba(16,185,129,0.3)]">
-                      <Bookmark size={14} fill="currentColor" /> Save
+                  <div className="flex gap-2 shrink-0 mt-1 relative">
+                    <AnimatePresence>
+                      {showSaveFeedback && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="absolute -top-10 right-16 bg-stone-900 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap z-50 flex items-center gap-1.5"
+                        >
+                          Saved! Check your Saved Places
+                          <div className="absolute -bottom-1 right-6 w-2 h-2 bg-stone-900 rotate-45" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    <button 
+                      onClick={handleSaveToggle}
+                      className={`${isPlaceSaved(currentLocation.id) ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-emerald-500 hover:bg-emerald-600 text-white"} px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-[0_2px_8px_rgba(16,185,129,0.3)]`}
+                    >
+                      <Bookmark size={14} fill={isPlaceSaved(currentLocation.id) ? "currentColor" : "none"} /> 
+                      {isPlaceSaved(currentLocation.id) ? "Saved" : "Save"}
                     </button>
                     <button
                       onClick={() => setShowShareModal(true)}

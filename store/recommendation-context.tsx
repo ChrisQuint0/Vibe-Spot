@@ -1,13 +1,16 @@
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
-import { MOCK_RECOMMENDATIONS, type Recommendation } from "@/lib/mock-data";
+import { MOCK_RECOMMENDATIONS, type Recommendation, type Location } from "@/lib/mock-data";
 
 interface RecContextType {
   recentRecommendations: Recommendation[];
   activeRecommendation: Recommendation | null;
+  savedPlaces: Location[];
   generateNewRecommendation: (scope: "anywhere" | "near") => Promise<string>;
   setActiveRecommendation: (rec: Recommendation | null) => void;
+  toggleSavePlace: (place: Location) => void;
+  isPlaceSaved: (id: string) => boolean;
 }
 
 const RecContext = createContext<RecContextType | undefined>(undefined);
@@ -22,6 +25,7 @@ export function RecommendationProvider({
   >([]);
   const [activeRecommendation, setActiveRecommendation] =
     useState<Recommendation | null>(null);
+  const [savedPlaces, setSavedPlaces] = useState<Location[]>([]);
 
   const generateNewRecommendation = async (scope: "anywhere" | "near") => {
     // Pick the right base recommendation based on the wizard scope
@@ -36,13 +40,31 @@ export function RecommendationProvider({
     return newRec.id;
   };
 
+  const toggleSavePlace = (place: Location) => {
+    setSavedPlaces((prev) => {
+      const exists = prev.some((p) => p.id === place.id);
+      if (exists) {
+        return prev.filter((p) => p.id !== place.id);
+      } else {
+        return [...prev, place];
+      }
+    });
+  };
+
+  const isPlaceSaved = (id: string) => {
+    return savedPlaces.some((place) => place.id === id);
+  };
+
   return (
     <RecContext.Provider
       value={{
         recentRecommendations,
         activeRecommendation,
+        savedPlaces,
         generateNewRecommendation,
         setActiveRecommendation,
+        toggleSavePlace,
+        isPlaceSaved,
       }}
     >
       {children}
