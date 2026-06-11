@@ -97,32 +97,34 @@ export function PlaceExpandedModal({ place, onClose }: PlaceExpandedModalProps) 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Tabs */}
-        <div className="flex border-b border-stone-100 text-sm font-medium relative shrink-0">
+        <div className="flex items-center justify-between border-b border-stone-100 text-sm font-medium relative shrink-0 px-4">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setTab("info")}
+              className={`py-4 px-4 text-center transition-colors border-b-2 ${
+                tab === "info"
+                  ? "text-emerald-600 border-emerald-500 bg-emerald-50/10"
+                  : "text-stone-500 hover:text-stone-700 border-transparent"
+              }`}
+            >
+              <Info size={16} className="inline mr-2 mb-0.5" /> Complete Info
+            </button>
+            <button
+              onClick={() => setTab("location")}
+              className={`py-4 px-4 text-center transition-colors border-b-2 ${
+                tab === "location"
+                  ? "text-emerald-600 border-emerald-500 bg-emerald-50/10"
+                  : "text-stone-500 hover:text-stone-700 border-transparent"
+              }`}
+            >
+              <Map size={16} className="inline mr-2 mb-0.5" /> Map Location
+            </button>
+          </div>
           <button
             onClick={onClose}
-            className="absolute top-3 right-4 p-2 bg-stone-100 text-stone-500 hover:bg-stone-200 rounded-full z-10 transition-colors"
+            className="p-2 bg-stone-100 text-stone-500 hover:bg-stone-200 rounded-full transition-colors"
           >
             <X size={18} />
-          </button>
-          <button
-            onClick={() => setTab("info")}
-            className={`flex-1 py-4 text-center transition-colors ${
-              tab === "info"
-                ? "text-emerald-600 border-b-2 border-emerald-500 bg-emerald-50/30"
-                : "text-stone-500 hover:bg-stone-50"
-            }`}
-          >
-            <Info size={16} className="inline mr-2 mb-0.5" /> Complete Info
-          </button>
-          <button
-            onClick={() => setTab("location")}
-            className={`flex-1 py-4 text-center transition-colors ${
-              tab === "location"
-                ? "text-emerald-600 border-b-2 border-emerald-500 bg-emerald-50/30"
-                : "text-stone-500 hover:bg-stone-50"
-            }`}
-          >
-            <Map size={16} className="inline mr-2 mb-0.5" /> Map Location
           </button>
         </div>
 

@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import { Menu, MessageSquare } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useChatContext } from "@/store/chat-context";
 import "./chat.css";
 
 // ── Types & Data ────────────────────────────────────────────────────────────
@@ -15,7 +16,6 @@ import type {
   VotersModalData,
 } from "@/components/chat/types";
 import {
-  INITIAL_CHATS,
   MY_ID,
   MY_AVATAR,
   FRIENDS,
@@ -43,10 +43,10 @@ import {
 export default function ChatPage() {
   const isMobile = useIsMobile();
   const { setOpenMobile } = useSidebar();
+  const { chats, setChats } = useChatContext();
 
   // ── Core State ──────────────────────────────────────────────────────────
-  const [chats, setChats] = useState<ChatSession[]>(INITIAL_CHATS);
-  const [activeChatId, setActiveChatId] = useState<string>(INITIAL_CHATS[0].id);
+  const [activeChatId, setActiveChatId] = useState<string>(chats[0]?.id || "");
   const activeChat = chats.find((c) => c.id === activeChatId) || chats[0];
 
   // ── Mobile Navigation ───────────────────────────────────────────────────
@@ -306,13 +306,18 @@ export default function ChatPage() {
   const handleDeleteChat = useCallback(() => {
     setChats((prev) => prev.filter((c) => c.id !== activeChatId));
     const remaining = chats.filter((c) => c.id !== activeChatId);
-    if (remaining.length > 0) {
-      setActiveChatId(remaining[0].id);
-    } else {
+    if (isMobile) {
       setActiveChatId("");
       setMobileView("list");
+    } else {
+      if (remaining.length > 0) {
+        setActiveChatId(remaining[0].id);
+      } else {
+        setActiveChatId("");
+        setMobileView("list");
+      }
     }
-  }, [activeChatId, chats]);
+  }, [activeChatId, chats, isMobile]);
 
   // ── Kick Member ─────────────────────────────────────────────────────────
   const handleKickMember = useCallback(

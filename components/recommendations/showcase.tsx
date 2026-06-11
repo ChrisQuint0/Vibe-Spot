@@ -1,6 +1,9 @@
 // components/recommendations/showcase.tsx
 "use client";
 
+import type { PlaceData } from "@/components/chat/types";
+import ShareToChatModal from "@/components/chat/share-to-chat-modal";
+
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
@@ -49,6 +52,7 @@ export function ShowcaseView() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showMoreList, setShowMoreList] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const locations = activeRecommendation?.locations || [];
   const currentLocation = locations[activeIndex];
@@ -413,7 +417,10 @@ export function ShowcaseView() {
                     <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-[0_2px_8px_rgba(16,185,129,0.3)]">
                       <Bookmark size={14} fill="currentColor" /> Save
                     </button>
-                    <button className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition">
+                    <button
+                      onClick={() => setShowShareModal(true)}
+                      className="bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition"
+                    >
                       <Share size={14} /> Share
                     </button>
                   </div>
@@ -624,6 +631,25 @@ export function ShowcaseView() {
           </button>
         </div>
       </div>
+      {/* SHARE TO CHAT MODAL */}
+      <AnimatePresence>
+        {showShareModal && currentLocation && (
+          <ShareToChatModal
+            place={{
+              name: currentLocation.name,
+              category: currentLocation.category,
+              description: currentLocation.description,
+              image: currentLocation.images[0],
+              price: currentLocation.price,
+              distance: "",
+              address: currentLocation.address,
+              tags: currentLocation.tags,
+              hours: currentLocation.hours,
+            }}
+            onClose={() => setShowShareModal(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
