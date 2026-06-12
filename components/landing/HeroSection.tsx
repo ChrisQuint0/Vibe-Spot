@@ -3,12 +3,12 @@ import { phrases } from "./constants";
 
 interface HeroSectionProps {
   onFindSpotClick: (msg: string, iconClass: string) => void;
-  activeSpotId: number | null;
+  activeSpotIds: number[];
 }
 
 export default function HeroSection({
   onFindSpotClick,
-  activeSpotId,
+  activeSpotIds,
 }: HeroSectionProps) {
   const [phraseOffset, setPhraseOffset] = useState(0);
   const [phraseHeight, setPhraseHeight] = useState(68);
@@ -28,7 +28,7 @@ export default function HeroSection({
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [activeSpotId]);
+  }, [activeSpotIds]);
 
   return (
     <main id="landing-overlay">
