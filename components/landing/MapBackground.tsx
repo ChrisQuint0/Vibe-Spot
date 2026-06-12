@@ -2,7 +2,7 @@ import React from "react";
 import { spotData, spotsOrder } from "./constants";
 
 interface MapBackgroundProps {
-  activeSpotId: number | null;
+  activeSpotIds: number[];
   isExiting: boolean;
   clearHideBuffer: (id: number) => void;
   startHideBuffer: () => void;
@@ -10,7 +10,7 @@ interface MapBackgroundProps {
 }
 
 export default function MapBackground({
-  activeSpotId,
+  activeSpotIds,
   isExiting,
   clearHideBuffer,
   startHideBuffer,
@@ -255,7 +255,7 @@ export default function MapBackground({
 
       {/* Pins layout mapping */}
       <div
-        className={`map-pin ${activeSpotId === 1 ? "active" : ""}`}
+        className={`map-pin ${activeSpotIds.includes(1) ? "active" : ""}`}
         id="pin-spot-1"
         style={{ left: "15%", top: "20%" }}
         onMouseEnter={() => clearHideBuffer(1)}
@@ -265,7 +265,7 @@ export default function MapBackground({
         <div className="pin-core"></div>
       </div>
       <div
-        className={`map-pin ${activeSpotId === 2 ? "active" : ""}`}
+        className={`map-pin ${activeSpotIds.includes(2) ? "active" : ""}`}
         id="pin-spot-2"
         style={{ left: "13%", top: "48%" }}
         onMouseEnter={() => clearHideBuffer(2)}
@@ -275,7 +275,7 @@ export default function MapBackground({
         <div className="pin-core"></div>
       </div>
       <div
-        className={`map-pin ${activeSpotId === 3 ? "active" : ""}`}
+        className={`map-pin ${activeSpotIds.includes(3) ? "active" : ""}`}
         id="pin-spot-3"
         style={{ left: "16%", top: "76%" }}
         onMouseEnter={() => clearHideBuffer(3)}
@@ -285,7 +285,7 @@ export default function MapBackground({
         <div className="pin-core"></div>
       </div>
       <div
-        className={`map-pin ${activeSpotId === 4 ? "active" : ""}`}
+        className={`map-pin ${activeSpotIds.includes(4) ? "active" : ""}`}
         id="pin-spot-4"
         style={{ left: "85%", top: "20%" }}
         onMouseEnter={() => clearHideBuffer(4)}
@@ -295,7 +295,7 @@ export default function MapBackground({
         <div className="pin-core"></div>
       </div>
       <div
-        className={`map-pin ${activeSpotId === 5 ? "active" : ""}`}
+        className={`map-pin ${activeSpotIds.includes(5) ? "active" : ""}`}
         id="pin-spot-5"
         style={{ left: "87%", top: "48%" }}
         onMouseEnter={() => clearHideBuffer(5)}
@@ -305,7 +305,7 @@ export default function MapBackground({
         <div className="pin-core"></div>
       </div>
       <div
-        className={`map-pin ${activeSpotId === 6 ? "active" : ""}`}
+        className={`map-pin ${activeSpotIds.includes(6) ? "active" : ""}`}
         id="pin-spot-6"
         style={{ left: "84%", top: "76%" }}
         onMouseEnter={() => clearHideBuffer(6)}
@@ -317,7 +317,7 @@ export default function MapBackground({
 
       {spotsOrder.map((id) => {
         const data = spotData[id];
-        if (activeSpotId !== id) return null;
+        if (!activeSpotIds.includes(id)) return null;
         return (
           <div
             key={id}

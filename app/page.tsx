@@ -20,12 +20,15 @@ export default function VibeSpotLanding() {
   const [isNavigating, setIsNavigating] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
-  const [activeSpotId, setActiveSpotId] = useState<number | null>(1);
+  const [activeSpotIds, setActiveSpotIds] = useState<number[]>([]);
   const [hoveredSpotId, setHoveredSpotId] = useState<number | null>(null);
   const [toast, setToast] = useState({ visible: false, message: "", icon: "" });
+  const [isExiting, setIsExiting] = useState(false);
+  const [isIntro, setIsIntro] = useState(true);
 
   const hoveredSpotIdRef = useRef(hoveredSpotId);
   const slideshowIndexRef = useRef(0);
+  const introIndexRef = useRef(0);
   const hideBufferTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -66,24 +69,60 @@ export default function VibeSpotLanding() {
     }
   }, []);
 
-  const [isExiting, setIsExiting] = useState(false);
+  // Intro Sequencer
+  useEffect(() => {
+    if (!isIntro || isLoading) return;
+
+    let intervalId: NodeJS.Timeout;
+    let timeoutId: NodeJS.Timeout;
+    let exitTimeoutId: NodeJS.Timeout;
+
+    intervalId = setInterval(() => {
+      if (introIndexRef.current < spotsOrder.length) {
+        const nextId = spotsOrder[introIndexRef.current];
+        setActiveSpotIds((prev) =>
+          prev.includes(nextId) ? prev : [...prev, nextId]
+        );
+        introIndexRef.current++;
+      } else {
+        clearInterval(intervalId);
+        timeoutId = setTimeout(() => {
+          setIsExiting(true);
+          exitTimeoutId = setTimeout(() => {
+            setIsIntro(false);
+            setActiveSpotIds([spotsOrder[0]]);
+            slideshowIndexRef.current = 0;
+            setIsExiting(false);
+          }, 350);
+        }, 4000);
+      }
+    }, 400);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+      clearTimeout(exitTimeoutId);
+    };
+  }, [isIntro, isLoading]);
 
   // Automated Slideshow Sequencer loop
   useEffect(() => {
+    if (isIntro) return;
+
     const interval = setInterval(() => {
       if (hoveredSpotIdRef.current === null) {
         setIsExiting(true);
         setTimeout(() => {
           slideshowIndexRef.current =
             (slideshowIndexRef.current + 1) % spotsOrder.length;
-          setActiveSpotId(spotsOrder[slideshowIndexRef.current]);
+          setActiveSpotIds([spotsOrder[slideshowIndexRef.current]]);
           setIsExiting(false);
         }, 350);
       }
     }, 4000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isIntro]);
 
   const showToast = (message: string, iconClass = "ti-circle-check-filled") => {
     setToast({ visible: true, message, icon: iconClass });
@@ -97,7 +136,12 @@ export default function VibeSpotLanding() {
     setHoveredSpotId(spotId);
     if (hideBufferTimeoutRef.current)
       clearTimeout(hideBufferTimeoutRef.current);
-    setActiveSpotId(spotId);
+
+    if (isIntro) setIsIntro(false);
+
+    setActiveSpotIds([spotId]);
+    setIsExiting(false);
+
     const idx = spotsOrder.indexOf(spotId);
     if (idx !== -1) slideshowIndexRef.current = idx;
   };
@@ -108,7 +152,7 @@ export default function VibeSpotLanding() {
       clearTimeout(hideBufferTimeoutRef.current);
     hideBufferTimeoutRef.current = setTimeout(() => {
       if (hoveredSpotIdRef.current === null) {
-        setActiveSpotId(null);
+        setActiveSpotIds([]);
       }
     }, 1200);
   };
@@ -128,7 +172,7 @@ export default function VibeSpotLanding() {
 
       {/* MapBackground remains at the bottom layer. It adds ambiance. */}
       <MapBackground
-        activeSpotId={activeSpotId}
+        activeSpotIds={activeSpotIds}
         isExiting={isExiting}
         clearHideBuffer={clearHideBuffer}
         startHideBuffer={startHideBuffer}
@@ -147,14 +191,14 @@ export default function VibeSpotLanding() {
             className="absolute inset-0 z-10 flex flex-col pointer-events-none"
           >
             {/* Re-enable pointer events for interactive elements */}
-            <div className="pointer-events-auto h-full flex flex-col">
+            <div className="pointer-events-none h-full flex flex-col">
               <Header
                 onAboutOpen={() => setAboutOpen(true)}
                 onSignupOpen={() => setSignupOpen(true)}
               />
               <HeroSection
                 onFindSpotClick={handleFindSpotClick} // Changed from showToast to transition state
-                activeSpotId={activeSpotId}
+                activeSpotIds={activeSpotIds}
               />
             </div>
           </motion.div>

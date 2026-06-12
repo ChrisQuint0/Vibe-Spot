@@ -7,7 +7,7 @@ interface HeaderProps {
 
 export default function Header({ onAboutOpen, onSignupOpen }: HeaderProps) {
   return (
-    <header className="app-header">
+    <header className="app-header pointer-events-auto">
       <div className="brand-container">
         {/* Clickable uncontained logo */}
         <div className="logo-badge" onClick={() => window.location.reload()}>
