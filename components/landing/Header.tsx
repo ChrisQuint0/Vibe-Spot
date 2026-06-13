@@ -26,7 +26,7 @@ export default function Header({ onAboutOpen, onSignupOpen }: HeaderProps) {
           About
         </button>
         <button className="action-btn-primary" onClick={onSignupOpen}>
-          Sign up free
+          Login / Signup
         </button>
       </div>
     </header>

@@ -38,6 +38,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 // 1. IMPORT THE CONTEXT HOOK
 import { useRecommendations } from "@/store/recommendation-context";
@@ -47,6 +57,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { state, isMobile, toggleSidebar, setOpenMobile } = useSidebar();
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleNavigate = (path: string) => {
     router.push(path);
@@ -279,7 +290,7 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  tooltip="Profile"
+                  tooltip="Christopher Quinto"
                   className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${
                     !isExpanded ? "justify-center" : ""
                   }`}
@@ -287,8 +298,8 @@ export function AppSidebar() {
                   <User className="text-text-secondary" />
                   {isExpanded && (
                     <>
-                      <span className="flex-1 text-left text-sm font-medium">
-                        Profile
+                      <span className="flex-1 text-left text-sm font-medium truncate">
+                        Christopher Quinto
                       </span>
                       <ChevronsUpDown className="ml-auto size-4" />
                     </>
@@ -300,9 +311,9 @@ export function AppSidebar() {
                 align="start"
                 className="w-48 rounded-xl shadow-lg"
               >
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                <DropdownMenuItem onSelect={() => setIsProfileOpen(true)}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -313,6 +324,47 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      {/* Profile Dialog */}
+      <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+        <DialogContent className="sm:max-w-[425px] border-border-secondary shadow-xl rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-text-primary">Edit Profile</DialogTitle>
+            <DialogDescription className="text-text-secondary">
+              Update your photo and display name.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-6 py-6">
+            <div className="flex flex-col items-center gap-4">
+              <div className="h-28 w-28 rounded-full bg-brand-primary-subtle border-[3px] border-brand-primary/20 flex items-center justify-center overflow-hidden relative group cursor-pointer shadow-sm transition-all hover:border-brand-primary/40 hover:shadow-md">
+                <User className="h-12 w-12 text-brand-primary opacity-80" />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <span className="text-white text-xs font-medium tracking-wide">Change Photo</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-2 max-w-[280px] mx-auto w-full">
+              <label htmlFor="name" className="text-sm font-semibold text-text-primary">
+                Display Name
+              </label>
+              <Input
+                id="name"
+                defaultValue="Christopher Quinto"
+                className="text-center rounded-xl border-border-primary focus-visible:ring-brand-primary focus-visible:border-brand-primary transition-all shadow-sm"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              type="button" 
+              onClick={() => setIsProfileOpen(false)}
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white rounded-xl px-6 py-2 transition-all duration-300 hover:shadow-lg hover:shadow-brand-primary/30 hover:-translate-y-0.5"
+            >
+              Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Sidebar>
   );
 }
